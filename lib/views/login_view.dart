@@ -22,6 +22,8 @@ class LoginView extends GetView<LoginController>{
           _getHeadIcon(),
           SizedBox(height:20),
           TextField(
+            autocorrect: false,
+            autofocus: true,
             controller:controller.password,
             obscureText: controller.showPassword ? false:true,
             decoration:InputDecoration(

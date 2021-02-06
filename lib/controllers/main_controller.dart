@@ -11,6 +11,7 @@ class MainController extends Controller{
   Future<void> onInit() async {
     this.store = Get.find<KeyService>();
     this._isSetup = await this.store.contains('user_password');
+    this.update();
     print('from main controller '+this._isSetup.toString());
     super.onInit();
   }

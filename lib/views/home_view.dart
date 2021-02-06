@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/home_controller.dart';
+import 'package:saivault/views/file_manager_view.dart';
 import 'package:saivault/views/password_manager_view.dart';
 
 class HomeView extends GetView<HomeController>{
@@ -11,7 +12,7 @@ class HomeView extends GetView<HomeController>{
 
   final List<Widget> pages = <Widget>[
       PasswordManagerView(),
-      Container(),
+      FileManagerView(),
       Container(),
   ];
 
@@ -36,7 +37,7 @@ class HomeView extends GetView<HomeController>{
         label: 'Passwords'
       ),
       BottomNavigationBarItem(
-        icon: Icon(LineIcons.folder),
+        icon: Icon(Icons.folder_open_outlined),
         label: 'Files'
       ),
       BottomNavigationBarItem(

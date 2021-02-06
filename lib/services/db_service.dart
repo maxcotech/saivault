@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class DBService extends GetxService{
 
-   final databaseName = 'maxco';
+   final databaseName = 'maxco1';
    Database _db;
    Database get db => this._db;
    Future<DBService> init() async {
@@ -30,8 +30,9 @@ class DBService extends GetxService{
      )""");
      await db.execute("""CREATE TABLE hidden_files(
         id INTEGER PRIMARY KEY,
-        original_path TEXT,
-        hidden_path TEXT,
+        original_path TEXT UNIQUE,
+        hidden_path TEXT UNIQUE,
+        initial_vector TEXT,
         hidden BOOLEAN,
         created_at TIMESTAMP
      )""");
