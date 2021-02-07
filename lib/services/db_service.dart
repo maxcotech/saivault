@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class DBService extends GetxService{
 
-   final databaseName = 'maxco1';
+   final databaseName = 'maxco2';
    Database _db;
    Database get db => this._db;
    Future<DBService> init() async {
@@ -43,5 +43,11 @@ class DBService extends GetxService{
         created_at TIMESTAMP
      )
      """);
+     await db.execute("""CREATE TABLE nested_entities(
+        id INTEGER PRIMARY KEY,
+        original_path TEXT,
+        hidden_path TEXT UNIQUE,
+        initial_vector TEXT
+     )""");
    }
 }

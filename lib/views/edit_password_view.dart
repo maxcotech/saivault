@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/edit_password_controller.dart';
+import 'package:saivault/widgets/custom_text_field.dart';
 
 class EditPasswordView extends StatelessWidget{
   final EditPasswordController controller = Get.put(new EditPasswordController());
@@ -9,7 +10,7 @@ class EditPasswordView extends StatelessWidget{
   Widget build(BuildContext context){
      return Scaffold(
       appBar:AppBar(
-        title:Text('Add Password')
+        title:Text('Edit Password')
       ),
       body:_body(context)
     );
@@ -21,22 +22,19 @@ class EditPasswordView extends StatelessWidget{
         padding:EdgeInsets.symmetric(horizontal:15,vertical:40),
         child:Column(
           children:<Widget>[
-            TextField(
+            customTextField(
               controller:controller.label,
-              decoration:InputDecoration(
-                labelText:'Enter Password Label',
-                prefixIcon: Icon(LineIcons.file_text)
-              )
+              labelText:'Enter Password Label',
+              prefixIcon: Icon(LineIcons.file_text)
             ),
             SizedBox(height:20),
-            TextField(
+            customTextField(
               controller:controller.password,
               maxLines: 7000,
               minLines: 1,
-              decoration:InputDecoration(
-                labelText:'Enter Password Value',
-                prefixIcon: Icon(LineIcons.lock)
-              ),
+              labelText:'Enter Password Value',
+              prefixIcon: Icon(LineIcons.lock)
+              ,
               
             ),
             SizedBox(height:40),
@@ -52,7 +50,7 @@ class EditPasswordView extends StatelessWidget{
       height:48,
       child:RaisedButton(
         color:Get.theme.accentColor,
-        child:controller.isLoading?CircularProgressIndicator(backgroundColor:Colors.white):Text('Save Password',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
+        child:controller.isLoading?CircularProgressIndicator(backgroundColor:Colors.white):Text('SAVE PASSWORD',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
         onPressed:controller.onSubmit
       )
     );

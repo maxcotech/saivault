@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/setup_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:saivault/widgets/custom_text_field.dart';
 
 class SetupView extends GetView<SetupController>{
   @override 
@@ -26,22 +27,18 @@ class SetupView extends GetView<SetupController>{
         children:<Widget>[
           _getHeadIcon(),
           SizedBox(height:10),
-          TextField(
+          customTextField(
             controller:controller.password,
             obscureText: controller.showPassword? false:true,
-            decoration:InputDecoration(
-              prefixIcon:Icon(LineIcons.lock),
-              labelText:'Enter Password',
-            )
+            prefixIcon:Icon(LineIcons.lock),
+            labelText:'Enter Password',
           ),
           SizedBox(height:10),
-          TextField(
+          customTextField(
             controller:controller.confirmPassword,
             obscureText:controller.showPassword? false:true,
-            decoration:InputDecoration(
-              prefixIcon:Icon(LineIcons.lock),
-              labelText:'Confirm Password',
-            )
+            prefixIcon:Icon(LineIcons.lock),
+            labelText:'Confirm Password',
           ),
           SizedBox(height:10),
           _toggleVisibilityWidget(),
@@ -73,7 +70,7 @@ class SetupView extends GetView<SetupController>{
       width:Get.size.width,
       child:RaisedButton(
         color:Colors.blueAccent,
-        child:Text('Save Password',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
+        child:Text('SAVE PASSWORD',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
         onPressed:controller.savePassword
       )
       );

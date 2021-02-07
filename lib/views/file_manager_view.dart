@@ -40,7 +40,8 @@ class FileManagerView extends StatelessWidget with FileExtension{
         itemBuilder:(BuildContext context, int index){
           HiddenFileModel item = controller.hiddenFiles[index];
           return ListTile(
-            leading:this.getFileTypeIcon(this.generateEntityFromPathSync(item.originalPath)),
+            shape:Border(bottom:BorderSide(color:Colors.black)),
+            leading:this.getFileTypeIcon(this.generateEntityFromPathSync(item.originalPath),path:item.originalPath),
             title:Text(item.originalPath.split('/').last),
             trailing:_trailingActions(item)
           );
@@ -81,7 +82,7 @@ class FileManagerView extends StatelessWidget with FileExtension{
             child:Padding(
               padding:EdgeInsets.only(left:10,right:5),
               child:RaisedButton(
-                onPressed:(){},
+                onPressed:controller.onHideAllTrackedEntities,
                 color:Colors.blue,
                 child:Text('HIDE ALL',style:TextStyle(color:Colors.white))
               )
@@ -90,7 +91,7 @@ class FileManagerView extends StatelessWidget with FileExtension{
             child:Padding(
               padding:EdgeInsets.only(right:10,left:5),
               child:RaisedButton(
-                onPressed:(){},
+                onPressed:controller.onRestoreAllTrackedEntities,
                 child:Text('RESTORE ALL')
               )
           ))

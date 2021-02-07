@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 
 mixin FileExtension{
-  Widget getFileTypeIcon(FileSystemEntity entity){
+  Widget getFileTypeIcon(FileSystemEntity entity,{String path}){
     if(entity is Directory){
       return Icon(Icons.folder);
     }
@@ -11,20 +11,47 @@ mixin FileExtension{
       File file = entity;
       if(this.isImage(file.path)){
         if(file.existsSync()){
-          return Image.file(file,width:40,height:40);
+          return CircleAvatar(backgroundImage:FileImage(file,scale:2),radius:23);
         }else{
-          return Icon(Icons.image);
+          return CircleAvatar(child:Icon(Icons.image),radius:23);
         }
       }
       if(this.isVideo(file.path)){
-        return Icon(Icons.videocam);
+        return CircleAvatar(child:Icon(Icons.videocam),radius:23);
       }
       if(this.isDocument(file.path)){
-        return Icon(LineIcons.book);
+        return CircleAvatar(child:Icon(LineIcons.book),radius:23);
       }
-      return Icon(LineIcons.file);
+      return CircleAvatar(child:Icon(LineIcons.file),radius:23);
     }else{
-      return Icon(Icons.link);
+      if(path != null){
+        if(this.isVideo(path)){
+      return CircleAvatar(child:Icon(Icons.videocam),radius:23);
+      }
+      if(this.isDocument(path)){
+        return CircleAvatar(child:Icon(LineIcons.book),radius:23);
+      }
+      if(this.isImage(path)){
+        return CircleAvatar(child:Icon(Icons.image_sharp),radius:23);
+      }
+      if(this.isFolder(path)){
+        return Icon(Icons.folder);
+      }
+      if(this.isCompressed(path)){
+        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:23);
+      }
+      }
+    
+      return CircleAvatar(child:Icon(Icons.file_present),radius:23);
+    }
+  }
+  bool isCompressed(String path){
+    String lastPath = path.split('/').last;
+    switch(lastPath){
+      case 'zip':return true;
+      case 'rar':return true;
+      case 'jar':return true;
+      default:return false;
     }
   }
   FileSystemEntity generateEntityFromPathSync(String path){
@@ -37,6 +64,16 @@ mixin FileExtension{
     else{
       return null;
     }
+  }
+  bool isFolder(String path){
+    String lastPath = path.split('/').last;
+    List<String> segments = lastPath.split('.');
+    if(segments[0] == lastPath){
+      return true;
+    }else if(segments.last == "hider"){
+      return true;
+    }
+    return false;
   }
   bool isImage(String path){
     String extension = path.split('.').last;

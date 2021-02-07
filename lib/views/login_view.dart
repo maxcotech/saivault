@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:saivault/controllers/login_controller.dart';
+import 'package:saivault/widgets/custom_text_field.dart';
 
 class LoginView extends GetView<LoginController>{
   @override 
@@ -21,19 +22,17 @@ class LoginView extends GetView<LoginController>{
         children:<Widget>[
           _getHeadIcon(),
           SizedBox(height:20),
-          TextField(
+          customTextField(
             autocorrect: false,
             autofocus: true,
             controller:controller.password,
             obscureText: controller.showPassword ? false:true,
-            decoration:InputDecoration(
-              prefixIcon:Icon(LineIcons.lock),
-              labelText:'Enter Password',
-              suffixIcon: IconButton(
+            prefixIcon:Icon(LineIcons.lock),
+            labelText:'Enter Password',
+            suffixIcon: IconButton(
                 icon:Icon(controller.showPassword? Icons.visibility:Icons.visibility_off),
                 onPressed:controller.togglePasswordVisibility
               )
-            )
           ),
           SizedBox(height:60),
           _submitButton()
@@ -55,7 +54,7 @@ class LoginView extends GetView<LoginController>{
       width:Get.size.width,
       child:RaisedButton(
         color:Colors.blueAccent,
-        child:Text('Proceed',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
+        child:Text('PROCEED',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
         onPressed:controller.onLogin
       )
       );

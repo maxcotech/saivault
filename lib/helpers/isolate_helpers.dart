@@ -43,11 +43,13 @@ Future<bool> encryptAndHideFile(dynamic payload)async{
     if(await desFile.exists() == false) await desFile.create(recursive:true);
     IOSink sink = desFile.openWrite();
     Stream<List<int>> stream = sourceFile.openRead();
+    DateTime beforeenc = DateTime.now();
     await for(List<int> data in stream){
       Uint8List encrypted = await cipher.encrypt(data,nonce:nonce,secretKey:key);
       sink.add(encrypted.toList());
     }
-    print('entity encryption completed');
+    Duration duration = DateTime.now().difference(beforeenc);
+    print('Entity encryption completed in '+ duration.inMilliseconds.toString()+' milliseconds');
     await sink.flush();
     await sink.close();
     await sourceFile.delete();
@@ -68,13 +70,16 @@ Future<bool> decryptAndRestoreFile(dynamic payload)async{
     SecretKey key = new SecretKey(base64Url.decode(payload['key']).toList());
     CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCbc,Hmac(sha256));
     if(await sourceFile.exists() == false) return false;
-    if(await desFile.exists() == false) desFile.create(recursive:true);
+    if(await desFile.exists() == false) await desFile.create(recursive:true);
     IOSink sink = desFile.openWrite();
     Stream<List<int>> stream = sourceFile.openRead();
+    DateTime beforedec = DateTime.now();
     await for(List<int> data in stream){
       Uint8List decrypted = await cipher.decrypt(data, secretKey: key, nonce: nonce);
       sink.add(decrypted.toList());
     }
+    Duration duration = DateTime.now().difference(beforedec);
+    print('Entity decryption completed in '+duration.inMilliseconds.toString()+' milliseconds');
     await sink.flush();
     await sink.close();
     await sourceFile.delete();

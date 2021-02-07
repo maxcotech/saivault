@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:saivault/controllers/home_controller.dart';
 import 'package:saivault/views/file_manager_view.dart';
 import 'package:saivault/views/password_manager_view.dart';
+import 'package:saivault/views/settings_view.dart';
 
 class HomeView extends GetView<HomeController>{
   HomeView({Key key, this.title}) : super(key: key);
@@ -13,7 +14,7 @@ class HomeView extends GetView<HomeController>{
   final List<Widget> pages = <Widget>[
       PasswordManagerView(),
       FileManagerView(),
-      Container(),
+      SettingsView(),
   ];
 
   @override 
