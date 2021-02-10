@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialBinding: MainBinding(),
-      initialRoute: control.isSetup? "/login" : "/setup",
+      initialRoute: "/login",
       getPages: pages(),
       title: 'Saivault',
       theme: ThemeData(

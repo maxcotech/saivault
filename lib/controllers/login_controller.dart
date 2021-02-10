@@ -18,10 +18,11 @@ class LoginController extends Controller{
   AppService get appService => this._appService;
   TextEditingController get password => this._password;
   @override 
-  void onInit(){
+  Future<void> onInit()async{
     _appService = Get.find<AppService>();
     _store = Get.find<KeyService>();
     _password = new TextEditingController();
+    if(await _store.contains('encryption_key') == false) Get.offNamed('/setup');
     super.onInit();
   }
   void togglePasswordVisibility(){

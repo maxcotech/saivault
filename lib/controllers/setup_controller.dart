@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 
 class SetupController extends Controller{
+   KeyService keyService;
    bool _showPassword = false;
    TextEditingController _password;
    TextEditingController _confirmPassword;
@@ -18,9 +19,11 @@ class SetupController extends Controller{
    TextEditingController get confirmPassword => this._confirmPassword;
 
    @override 
-   void onInit(){
+   Future<void> onInit()async{
+     keyService = Get.find<KeyService>();
      this._password = new TextEditingController();
      this._confirmPassword = new TextEditingController();
+     if(await keyService.contains('encryption_key') == true) Get.offNamed('/login');
      this._store = Get.find<KeyService>();
      super.onInit();
    }

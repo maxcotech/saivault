@@ -6,7 +6,7 @@ import 'package:saivault/models/password_model.dart';
 import 'package:saivault/models/hidden_file_model.dart';
 import 'package:encrypt/encrypt.dart';
 import 'dart:io';
-import 'package:cryptography_flutter/cryptography.dart';
+import 'package:cryptography/cryptography.dart';
 
 List<PasswordModel> serializeListToPasswordModels(dynamic results){
   List<PasswordModel> passwordModels = new List<PasswordModel>();
@@ -38,20 +38,23 @@ Future<bool> encryptAndHideFile(dynamic payload)async{
     File desFile = new File(payload['des_path']);
     Nonce nonce = new Nonce(base64Url.decode(payload['iv_string']).toList());
     SecretKey key = new SecretKey(base64Url.decode(payload['key']).toList());
-    CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCbc, Hmac(sha256));
+    //CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCtr, Hmac(sha256));
     if(await sourceFile.exists() == false) return false;
     if(await desFile.exists() == false) await desFile.create(recursive:true);
-    IOSink sink = desFile.openWrite();
-    Stream<List<int>> stream = sourceFile.openRead();
+    //IOSink sink = desFile.openWrite();
+    //Stream<List<int>> stream = sourceFile.openRead();
+    var sourceFileData = await sourceFile.readAsBytes();
     DateTime beforeenc = DateTime.now();
-    await for(List<int> data in stream){
-      Uint8List encrypted = await cipher.encrypt(data,nonce:nonce,secretKey:key);
+    /*await for(List<int> data in stream){
+      Uint8List encrypted = await chacha20Poly1305Aead.encrypt(data,nonce:nonce,secretKey:key);
       sink.add(encrypted.toList());
-    }
+    }*/
+    Uint8List encrypted = await chacha20Poly1305Aead.encrypt(sourceFileData,nonce:nonce,secretKey:key);
+    await desFile.writeAsBytes(encrypted);
     Duration duration = DateTime.now().difference(beforeenc);
     print('Entity encryption completed in '+ duration.inMilliseconds.toString()+' milliseconds');
-    await sink.flush();
-    await sink.close();
+    /*await sink.flush();
+    await sink.close();*/
     await sourceFile.delete();
     return true;
   }
@@ -68,20 +71,23 @@ Future<bool> decryptAndRestoreFile(dynamic payload)async{
     File desFile = new File(payload['des_path']);
     Nonce nonce = new Nonce(base64Url.decode(payload['iv_string']).toList());
     SecretKey key = new SecretKey(base64Url.decode(payload['key']).toList());
-    CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCbc,Hmac(sha256));
+    //CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCtr,Hmac(sha256));
     if(await sourceFile.exists() == false) return false;
     if(await desFile.exists() == false) await desFile.create(recursive:true);
-    IOSink sink = desFile.openWrite();
-    Stream<List<int>> stream = sourceFile.openRead();
+    /*IOSink sink = desFile.openWrite();
+    Stream<List<int>> stream = sourceFile.openRead();*/
     DateTime beforedec = DateTime.now();
-    await for(List<int> data in stream){
-      Uint8List decrypted = await cipher.decrypt(data, secretKey: key, nonce: nonce);
+    /*await for(List<int> data in stream){
+      Uint8List decrypted = await chacha20Poly1305Aead.decrypt(data, secretKey: key, nonce: nonce);
       sink.add(decrypted.toList());
-    }
+    }*/
+    var sourceFileData = await sourceFile.readAsBytes();
     Duration duration = DateTime.now().difference(beforedec);
+    Uint8List decrypted = await chacha20Poly1305Aead.decrypt(sourceFileData, secretKey: key, nonce: nonce);
+    await desFile.writeAsBytes(decrypted);
     print('Entity decryption completed in '+duration.inMilliseconds.toString()+' milliseconds');
-    await sink.flush();
-    await sink.close();
+    /*await sink.flush();
+    await sink.close();*/
     await sourceFile.delete();
     return true;
   }

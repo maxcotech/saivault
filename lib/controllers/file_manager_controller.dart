@@ -10,6 +10,7 @@ import 'package:saivault/models/hidden_file_model.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:flutter/foundation.dart' show compute;
+import 'package:saivault/services/file_encryption.dart';
 import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 
@@ -128,13 +129,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       'hidden_files',<String,dynamic>{'hidden':status},where:'id = ?',whereArgs:[id]);
     return dbResult;
   }
-  Future<bool> hideFile(String sourcePath,String desPath,Key key,String ivString)async{
-    bool result = await compute(encryptAndHideFile,<String,dynamic>{
-      'des_path':desPath,'source_path':sourcePath,
-      'key':key.base64,'iv_string':ivString
-    });
-    return result;
-  }
+  
   Future<bool> restoreEntity(String originalPath,String cryptPath,Key key,String ivString)async{
     FileSystemEntityType entityType = await FileSystemEntity.type(cryptPath);
     if(entityType == FileSystemEntityType.directory){
@@ -157,10 +152,18 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
     return false;
   }
   Future<bool> restoreFile(String sourcePath,String desPath,Key key,String ivString)async{
-    return await compute(decryptAndRestoreFile,<String,dynamic>{
+    bool result = await compute(decryptAndRestoreFile,<String,dynamic>{
       'des_path':desPath,'source_path':sourcePath,
       'key':key.base64,'iv_string':ivString
     });
+    return result;
+  }
+  Future<bool> hideFile(String sourcePath,String desPath,Key key,String ivString)async{
+    bool result = await compute(encryptAndHideFile,<String,dynamic>{
+      'des_path':desPath,'source_path':sourcePath,
+      'key':key.base64,'iv_string':ivString
+    });
+    return result;
   }
 
   Future<bool> nestedHiddenPathExists(String path)async{

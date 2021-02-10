@@ -83,7 +83,7 @@ class FileStorageController extends Controller with FileExtension,PathMixin{
       if(this._pathsToTrack.length > 0){
         Key key = appService.encryptionKey;
         Encrypter encrypter = new Encrypter(AES(key));
-        IV iv = IV.fromLength(16);
+        IV iv = IV.fromLength(12);//changed from 16 to 12
         await Future.forEach(this._pathsToTrack,(String path)async{
           Encrypted encrypted = encrypter.encrypt(path,iv:iv);
           String encryptedText = encrypted.base64;
