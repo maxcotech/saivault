@@ -13,7 +13,6 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:saivault/services/file_encryption.dart';
 import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
-import 'package:native_crypto/native_crypto.dart' as nc;
 
 class FileManagerController extends Controller with FileExtension,PathMixin,EncryptionMixin{
   DBService dbService;
@@ -71,6 +70,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
         await for(FileSystemEntity folderItem in folder.list()){
           String itemCPath = await this.generateCryptPathFromOriginal(folderItem.path);
           if(await this.createNestedEntityPath(folderItem.path, itemCPath)){
+            print('nested path created for '+folderItem.path+' cryptpath is '+itemCPath);
             bool result = await this.hideEntity(folderItem.path,itemCPath,key,ivString,true);
             if(result == false) return false;
           }else{
@@ -141,11 +141,13 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
           String newOriginalPath = pathObj['original_path'];
           String newIvString = isNested? pathObj['file_iv']:ivString;
           bool result = await this.restoreEntity(newOriginalPath,entity.path,key,newIvString,true);
-          if(result == false){print('file restoration failed');return false;}
-        }else{return false;}
+          if(result == false){print('file restoration failed for '+newOriginalPath);return false;}
+        }else{
+          print('call to getOriginalPathByHidden returned null for cryptpath '+entity.path);
+        }
       }
       if(await this.deleteNestedEntityByHidden(cryptPath) != -1){
-        await folder.delete();
+        print('crypt entity deleted');
       }
       return true;
     }

@@ -7,11 +7,7 @@ mixin PathMixin{
    * /data/user/0/com.example.saivault/app_flutter/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider/.Camera.hider/7c2b2965-e471-4715-95fd-8e7522c15654.aes
    * /storage/emulated/0/.maxwell/recovery_path/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider
    */
-  Future<String> generateOriginalFromCryptPath(String path,)async{
-    if(path.isEmpty) return null;
-    
-
-  }
+  
   Future<String> extractCryptPath(String path)async{
     List<String> segments = path.split('/');
     int indexOfRecovery = this.getIndexOfRecoveryPath(segments);
