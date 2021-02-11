@@ -1,13 +1,11 @@
 import 'package:get/get.dart';
 import 'package:saivault/controllers/home_controller.dart';
-import 'package:saivault/controllers/login_controller.dart';
 import 'package:saivault/controllers/setup_controller.dart';
 
 class MainBinding extends Bindings{
     @override 
     void dependencies(){
       Get.lazyPut<SetupController>(() => new SetupController());
-      Get.lazyPut<LoginController>(() => new LoginController());
       Get.lazyPut<HomeController>(() => new HomeController());
     }
 }

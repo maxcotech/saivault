@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
+import 'package:native_crypto/native_crypto.dart' as nc;
 import 'dart:io';
 import 'dart:convert';
 
@@ -60,7 +61,46 @@ static Future<bool> encryptAndHideFile(dynamic payload)async{
     print(e.toString());
     return false;
   }
-  
+}
+
+static Future<String> encryptFile(Map<String,dynamic> payload)async{
+  File sourceFile = new File(payload['source_path']);
+  File desFile = new File(payload['des_path']);
+  if(await sourceFile.exists() == false) return null;
+  if(await desFile.exists() == false) await desFile.create(recursive:true);
+  nc.SecretKey key = nc.SecretKey.fromBytes(base64Url.decode(payload['key']),algorithm:nc.CipherAlgorithm.AES);
+  nc.AESCipher aes = nc.AESCipher(key,nc.CipherParameters(
+    nc.BlockCipherMode.CBC,nc.PlainTextPadding.PKCS5
+  ));
+  DateTime beforeenc = DateTime.now();
+  var sourceData = await sourceFile.readAsBytes();
+  nc.CipherText cipherText = await aes.encrypt(sourceData);
+  await desFile.writeAsBytes(cipherText.bytes);
+  Duration duration = DateTime.now().difference(beforeenc);
+  print('Entity encryption completed in '+ duration.inMilliseconds.toString()+' milliseconds');
+  await sourceFile.delete();
+  return base64Url.encode(cipherText.iv);
+
+}
+static Future<bool> decryptFile(Map<String,dynamic> payload)async{
+   File sourceFile = new File(payload['source_path']);
+   File desFile = new File(payload['des_path']);
+   if(await sourceFile.exists() == false) return false;
+   if(await desFile.exists() == false) await desFile.create(recursive:true);
+   nc.SecretKey key = nc.SecretKey.fromBytes(base64Url.decode(payload['key']),algorithm:nc.CipherAlgorithm.AES);
+   nc.AESCipher aes = nc.AESCipher(key,nc.CipherParameters(
+    nc.BlockCipherMode.CBC,nc.PlainTextPadding.PKCS5
+  ));
+  DateTime beforedec = DateTime.now();
+  var sourceData = await sourceFile.readAsBytes();
+  nc.CipherText cipherText = nc.AESCipherText(sourceData,base64Url.decode(payload['iv_string']));
+  var decrypted = await aes.decrypt(cipherText);   
+  await desFile.writeAsBytes(decrypted);  
+  Duration duration = DateTime.now().difference(beforedec);
+  print('Entity decryption completed in '+duration.inMilliseconds.toString()+' milliseconds');
+  await sourceFile.delete();
+  return true;
+   
 }
 
 }

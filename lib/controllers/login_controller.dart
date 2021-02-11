@@ -10,7 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as e;
 
 class LoginController extends Controller{
-  TextEditingController _password;
+  TextEditingController _password = new TextEditingController();
   bool _showPassword = false;
   AppService _appService;
   KeyService _store;
@@ -21,9 +21,9 @@ class LoginController extends Controller{
   Future<void> onInit()async{
     _appService = Get.find<AppService>();
     _store = Get.find<KeyService>();
-    _password = new TextEditingController();
     if(await _store.contains('encryption_key') == false) Get.offNamed('/setup');
     super.onInit();
+    return;
   }
   void togglePasswordVisibility(){
     this._showPassword = !this._showPassword;

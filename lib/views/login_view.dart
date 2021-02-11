@@ -5,7 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:saivault/controllers/login_controller.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 
-class LoginView extends GetView<LoginController>{
+class LoginView extends StatelessWidget{
+  final LoginController controller = Get.put(new LoginController());
   @override 
   Widget build(BuildContext context){
     return Scaffold(

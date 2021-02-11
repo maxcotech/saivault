@@ -25,22 +25,11 @@ void getDialog({String message,Status status = Status.success}){
     }
   }
 
-  Get.dialog(Dialog(
-    child:Container(
-      padding:EdgeInsets.symmetric(horizontal:15,vertical:15),
-      child:Column(
-        mainAxisSize: MainAxisSize.min,
-        children:<Widget>[
-        Icon(getIconData(),color:getIconColor(),size:45),
-        SizedBox(height:10),
-        Text(message,style:TextStyle(fontSize:16)),
-        SizedBox(height:20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children:<Widget>[
-          FlatButton(child:Text('OK',style:TextStyle(fontSize:16,fontWeight:FontWeight.bold)),onPressed:()=>Get.back())
-        ])
-      ])
-    )
+  Get.dialog(AlertDialog(
+    title:Icon(getIconData(),color:getIconColor(),size:45),
+    content:Text(message,style:TextStyle(fontSize:16)),
+    actions:[FlatButton(child:Text('OK',style:TextStyle(fontSize:16,fontWeight:FontWeight.bold)),
+           onPressed:()=>Get.back())]
+    
   ));
 }

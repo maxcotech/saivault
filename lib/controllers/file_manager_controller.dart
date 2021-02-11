@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:saivault/services/file_encryption.dart';
 import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
+import 'package:native_crypto/native_crypto.dart' as nc;
 
 class FileManagerController extends Controller with FileExtension,PathMixin,EncryptionMixin{
   DBService dbService;
@@ -62,7 +63,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       getDialog(message:e.toString(),status:Status.error);
     }
   }
-  Future<bool> hideEntity(String originalPath,String cryptPath,Key key,String ivString)async{
+  Future<bool> hideEntity(String originalPath,String cryptPath,Key key,String ivString,bool isNested)async{
     FileSystemEntityType entityType = await FileSystemEntity.type(originalPath);
     if(entityType == FileSystemEntityType.directory){
       Directory folder = new Directory(originalPath);
@@ -70,7 +71,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
         await for(FileSystemEntity folderItem in folder.list()){
           String itemCPath = await this.generateCryptPathFromOriginal(folderItem.path);
           if(await this.createNestedEntityPath(folderItem.path, itemCPath)){
-            bool result = await this.hideEntity(folderItem.path,itemCPath,key,ivString);
+            bool result = await this.hideEntity(folderItem.path,itemCPath,key,ivString,true);
             if(result == false) return false;
           }else{
             return false;
@@ -84,7 +85,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
     }
     if(entityType == FileSystemEntityType.file){
       //entity is a file
-      return await this.hideFile(originalPath,cryptPath,key,ivString);
+      return await this.hideFile(originalPath,cryptPath,key,ivString,isNested);
     }
     return false;
   }
@@ -98,7 +99,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       if(model.hidden == 0){
         //proceed to hide entity
         if(await this.hideEntity(model.originalPath,model.hiddenPath,
-          key,model.initialVector) == true){
+          key,model.initialVector,false) == true){
           updateStatus = await this.updateEntityStatus(1,model.id);
           if(updateStatus != -1) Get.rawSnackbar(message:'Entity was successfully hidden.',duration:Duration(seconds:3));
         }else{
@@ -107,7 +108,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       }
       else if(model.hidden == 1){
         //restore file;
-        if(await this.restoreEntity(model.originalPath,model.hiddenPath,key,model.initialVector) == true){
+        if(await this.restoreEntity(model.originalPath,model.hiddenPath,key,model.fileIv,false) == true){
           updateStatus = await this.updateEntityStatus(0,model.id);
           if(updateStatus != -1) Get.rawSnackbar(message:'Entity successfully restored.',duration:Duration(seconds:3));
 
@@ -130,14 +131,16 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
     return dbResult;
   }
   
-  Future<bool> restoreEntity(String originalPath,String cryptPath,Key key,String ivString)async{
+  Future<bool> restoreEntity(String originalPath,String cryptPath,Key key,String ivString,bool isNested)async{
     FileSystemEntityType entityType = await FileSystemEntity.type(cryptPath);
     if(entityType == FileSystemEntityType.directory){
       Directory folder = new Directory(cryptPath);
       await for(FileSystemEntity entity in folder.list()){
-        String newOriginalPath = await this.getOriginalPathByHidden(entity.path);
-        if(newOriginalPath != null){
-          bool result = await this.restoreEntity(newOriginalPath,entity.path,key,ivString);
+        Map<String,dynamic> pathObj = await this.getOriginalPathByHidden(entity.path);
+        if(pathObj != null){
+          String newOriginalPath = pathObj['original_path'];
+          String newIvString = isNested? pathObj['file_iv']:ivString;
+          bool result = await this.restoreEntity(newOriginalPath,entity.path,key,newIvString,true);
           if(result == false){print('file restoration failed');return false;}
         }else{return false;}
       }
@@ -152,18 +155,30 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
     return false;
   }
   Future<bool> restoreFile(String sourcePath,String desPath,Key key,String ivString)async{
-    bool result = await compute(decryptAndRestoreFile,<String,dynamic>{
+    bool result = await FileEncryption.decryptFile(<String,dynamic>{
       'des_path':desPath,'source_path':sourcePath,
       'key':key.base64,'iv_string':ivString
     });
     return result;
   }
-  Future<bool> hideFile(String sourcePath,String desPath,Key key,String ivString)async{
-    bool result = await compute(encryptAndHideFile,<String,dynamic>{
+  Future<bool> hideFile(String sourcePath,String desPath,Key key,String ivString,bool isNested)async{
+    String result = await FileEncryption.encryptFile(<String,dynamic>{
       'des_path':desPath,'source_path':sourcePath,
       'key':key.base64,'iv_string':ivString
     });
-    return result;
+    if(result != null){
+      if(isNested){
+        await dbService.db.update('nested_entities',<String,dynamic>{'file_iv':result},
+        where:'hidden_path = ?',whereArgs:[desPath] );
+      }else{
+        await dbService.db.update('hidden_files',<String,dynamic>{'file_iv':result},
+        where:'hidden_path = ?',whereArgs:[desPath]
+        );
+      }
+      
+      return true;
+    }
+    return false;
   }
 
   Future<bool> nestedHiddenPathExists(String path)async{
@@ -191,14 +206,14 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
     }
     return result != -1? true:false;
   }
-  Future<String> getOriginalPathByHidden(String hidden)async{
+  Future<Map<String,dynamic>> getOriginalPathByHidden(String hidden)async{
     List<Map<String,dynamic>> result = await dbService.db.query('nested_entities',
       where:'hidden_path = ?',whereArgs:[hidden]);
     if(result.length > 0){
       String encString = result[0]['original_path'];
       String ivString = result[0]['initial_vector'];
       String decString = await this.decryptString(encString,this.appService.encryptionKey,ivString);
-      return decString;
+      return <String,dynamic>{'original_path':decString,'file_iv':result[0]['file_iv']};
     }else{
       return null;
     }
@@ -214,7 +229,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       if(openEntities.length > 0){
         this.setLoading(true);
         for(HiddenFileModel item in openEntities){
-          if(await this.hideEntity(item.originalPath,item.hiddenPath,key,item.initialVector) == true){
+          if(await this.hideEntity(item.originalPath,item.hiddenPath,key,item.initialVector,false) == true){
             await this.updateEntityStatus(1,item.id);
           }else{
             throw new Exception('Failed to hide entity on path '+item.originalPath);
@@ -237,7 +252,7 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       if(hiddenEntities.length > 1){
         this.setLoading(true);
         for(HiddenFileModel item in hiddenEntities){
-          if(await this.restoreEntity(item.originalPath,item.hiddenPath,key,item.initialVector) == true){
+          if(await this.restoreEntity(item.originalPath,item.hiddenPath,key,item.fileIv,false) == true){
             await this.updateEntityStatus(0,item.id);
           }else{
             throw new Exception('Failed to restore entity on path '+item.originalPath);
@@ -253,5 +268,6 @@ class FileManagerController extends Controller with FileExtension,PathMixin,Encr
       getDialog(message:e.toString(),status:Status.error);
     }
   }
+  
   
 }
