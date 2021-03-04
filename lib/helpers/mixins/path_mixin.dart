@@ -25,6 +25,17 @@ mixin PathMixin{
     }
     
   }
+
+  Future<String> getStoragePathByEntity(String entityPath) async {
+    List<StorageInfo> storageInfos = await PathProviderEx.getStorageInfo();
+    for(var info in storageInfos){
+      if(entityPath.startsWith(info.rootDir)){
+        return info.rootDir;
+      }
+    }
+    return storageInfos[storageInfos.length - 1].rootDir;
+  }
+
   int getIndexOfRecoveryPath(List<String> segments){
     int counter = 0;
     while(counter < segments.length){

@@ -1,6 +1,5 @@
-import 'dart:io';
-import 'package:path/path.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:saivault/controllers/file_manager_controller.dart';
@@ -11,8 +10,6 @@ import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:get/get.dart';
 import 'package:saivault/widgets/dialog.dart';
-import 'package:uuid/uuid.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FileStorageController extends Controller with FileExtension,PathMixin{
   List<String> _pathsToTrack;
@@ -105,6 +102,12 @@ class FileStorageController extends Controller with FileExtension,PathMixin{
     catch(e){
       this.setLoading(false);
       getDialog(message:e.toString(),status:Status.error);
+    }
+  }
+  Future<void> browseDirectories(String arg)async{
+    var request = await Permission.storage.request();
+    if(request.isGranted){
+      Get.toNamed('/directory_browser',arguments:arg);
     }
   }
 

@@ -20,7 +20,9 @@ class FileStorageView extends GetView<FileStorageController>{
     );
   }
   Widget _body(){
-    return GetBuilder(builder:(control){
+    return GetBuilder(
+      init:FileStorageController(),
+      builder:(control){
       return FutureBuilder(
         future:controller.getStoragePaths(),
         builder:(BuildContext context,AsyncSnapshot<List<StorageInfo>> snapshot){
@@ -36,8 +38,8 @@ class FileStorageView extends GetView<FileStorageController>{
                   title:Text(snapshot.data[index].rootDir),
                   subtitle:Text(snapshot.data[index].availableGB.toString()+"GB Available"),
                   trailing:Icon(CupertinoIcons.forward),
-                  onTap:(){
-                    Get.toNamed('/directory_browser',arguments:snapshot.data[index].rootDir);
+                  onTap:()async{
+                    await controller.browseDirectories(snapshot.data[index].rootDir);
                   }
                 )
     );

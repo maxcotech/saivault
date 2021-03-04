@@ -28,12 +28,13 @@ class SetupView extends GetView<SetupController>{
           _getHeadIcon(),
           SizedBox(height:10),
           customTextField(
+            autofocus: true,
             controller:controller.password,
             obscureText: controller.showPassword? false:true,
             prefixIcon:Icon(LineIcons.lock),
             labelText:'Enter Password',
           ),
-          SizedBox(height:10),
+          SizedBox(height:20),
           customTextField(
             controller:controller.confirmPassword,
             obscureText:controller.showPassword? false:true,

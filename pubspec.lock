@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0-nullsafety.1"
+  circular_check_box:
+    dependency: "direct main"
+    description:
+      name: circular_check_box
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   clock:
     dependency: transitive
     description:
@@ -210,11 +217,9 @@ packages:
   native_crypto:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "v0.0.5"
-      resolved-ref: "4d0dd7e5e310a17847035d0ed12baeb650242d5b"
-      url: "https://gogs.pointcheval.fr/hugo/native-crypto-flutter.git"
-    source: git
+      path: "../../Desktop/flutter_dependencies/flutter_plugins/native-crypto-flutter"
+      relative: true
+    source: path
     version: "0.0.5+1"
   password_hash:
     dependency: "direct main"

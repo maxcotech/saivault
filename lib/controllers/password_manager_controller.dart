@@ -5,6 +5,7 @@ import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:get/get.dart';
+import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:saivault/helpers/isolate_helpers.dart';
 
@@ -48,12 +49,15 @@ class PasswordManagerController extends Controller{
      return result;
   }
   Future<int> deletePasswordById(int id)async{
-    int result = await dbService.db.delete('password_store',where:'id = ?',whereArgs:[id]);
-    await this.loadSavedPasswords();
-    if(result != -1){
-      Get.rawSnackbar(message:'Password Successfully deleted',duration:Duration(seconds:3));
+    if(await confirmDialog(message:'Are you sure you wish to proceed with deleting this key record ?')  ){
+      int result = await dbService.db.delete('password_store',where:'id = ?',whereArgs:[id]);
+      await this.loadSavedPasswords();
+      if(result != -1){
+        Get.rawSnackbar(message:'Password Successfully deleted',duration:Duration(seconds:3));
+      }
+      return result;
     }
-    return result;
+    return null;
   }
   Future<List<PasswordModel>> searchPasswords(String query)async{
     

@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
@@ -59,7 +60,7 @@ class FileManagerView extends StatelessWidget with FileExtension{
     return Row(
       mainAxisSize: MainAxisSize.min,
       children:<Widget>[
-        Checkbox(
+        CircularCheckBox(
           value:model.hidden == 1? true:false,
           onChanged:(bool val)async{
             await controller.onToggleHideEntity(model);
@@ -99,11 +100,6 @@ class FileManagerView extends StatelessWidget with FileExtension{
       )
     );
   }
-  FloatingActionButton _fab(){
-    return FloatingActionButton(
-      child:Icon(Icons.add),
-      onPressed:controller.onClickAdd
-    );
-  }
+  
   
 }

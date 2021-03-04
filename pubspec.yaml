@@ -19,7 +19,9 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-
+dependency_overrides:
+  native_crypto:
+    path: ../../Desktop/flutter_dependencies/flutter_plugins/native-crypto-flutter
 dependencies:
   flutter:
     sdk: flutter
@@ -35,6 +37,7 @@ dependencies:
   permission_handler:
   uuid: 2.2.2
   cryptography_flutter:
+  circular_check_box:
   isolate_handler: ^0.3.1
   native_crypto:
     git:

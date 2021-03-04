@@ -1,106 +1,108 @@
 import 'dart:typed_data';
-import 'package:cryptography/cryptography.dart';
 import 'package:native_crypto/native_crypto.dart' as nc;
+import 'package:saivault/config/app_constants.dart';
+import 'package:saivault/helpers/mixins/path_mixin.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:saivault/widgets/confirm_dialog.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:saivault/services/storage_channel_service.dart';
 
-class FileEncryption{
-  static Future<bool> decryptAndRestoreFile(dynamic payload)async{
-  try{
-    File sourceFile = new File(payload['source_path']);
-    File desFile = new File(payload['des_path']);
-    Nonce nonce = new Nonce(base64Url.decode(payload['iv_string']).toList());
-    SecretKey key = new SecretKey(base64Url.decode(payload['key']).toList());
-    CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCtr,Hmac(sha256));
-    if(await sourceFile.exists() == false) return false;
-    if(await desFile.exists() == false) await desFile.create(recursive:true);
-    IOSink sink = desFile.openWrite();
-    Stream<List<int>> stream = sourceFile.openRead();
-    DateTime beforedec = DateTime.now();
-    await for(List<int> data in stream){
-      Uint8List decrypted = await chacha20Poly1305Aead.decrypt(data, secretKey: key, nonce: nonce);
-      sink.add(decrypted.toList());
-    }
-    Duration duration = DateTime.now().difference(beforedec);
-    print('Entity decryption completed in '+duration.inMilliseconds.toString()+' milliseconds');
-    await sink.flush();
-    await sink.close();
-    await sourceFile.delete();
-    return true;
-  }
-  catch(e){
-    print(e.toString());
-    return false;
-  }
+class FileEncryption with PathMixin{
   
-}
-static Future<bool> encryptAndHideFile(dynamic payload)async{
-  try{
-    File sourceFile = new File(payload['source_path']);
-    File desFile = new File(payload['des_path']);
-    Nonce nonce = new Nonce(base64Url.decode(payload['iv_string']).toList());
-    SecretKey key = new SecretKey(base64Url.decode(payload['key']).toList());
-    CipherWithAppendedMac cipher = CipherWithAppendedMac(aesCtr, Hmac(sha256));
-    if(await sourceFile.exists() == false) return false;
-    if(await desFile.exists() == false) await desFile.create(recursive:true);
-    IOSink sink = desFile.openWrite();
-    Stream<List<int>> stream = sourceFile.openRead();
-    DateTime beforeenc = DateTime.now();
-    await for(List<int> data in stream){
-      Uint8List encrypted = await chacha20Poly1305Aead.encrypt(data,nonce:nonce,secretKey:key);
-      sink.add(encrypted.toList());
-    }
-    Duration duration = DateTime.now().difference(beforeenc);
-    print('Entity encryption completed in '+ duration.inMilliseconds.toString()+' milliseconds');
-    await sink.flush();
-    await sink.close();
-    await sourceFile.delete();
-    return true;
-  }
-  catch(e){
-    print(e.toString());
-    return false;
-  }
-}
-
-static Future<String> encryptFile(Map<String,dynamic> payload)async{
+Future<String> encryptFile(Map<String,dynamic> payload)async{
   File sourceFile = new File(payload['source_path']);
   File desFile = new File(payload['des_path']);
+  print('root of source file '+await this.getStoragePathByEntity(sourceFile.path));
   if(await sourceFile.exists() == false) return null;
-  if(await desFile.exists() == false) await desFile.create(recursive:true);
+  if(await desFile.exists() == false){
+    if(await desFile.exists() == false){
+      bool res = await this.forceCreateFile(desFile);
+      if(res != true) return null;
+    }
+  }
   nc.SecretKey key = nc.SecretKey.fromBytes(base64Url.decode(payload['key']),algorithm:nc.CipherAlgorithm.AES);
   nc.AESCipher aes = nc.AESCipher(key,nc.CipherParameters(
     nc.BlockCipherMode.CBC,nc.PlainTextPadding.PKCS5
   ));
   DateTime beforeenc = DateTime.now();
-  var sourceData = await sourceFile.readAsBytes();
-  nc.CipherText cipherText = await aes.encrypt(sourceData);
-  await desFile.writeAsBytes(cipherText.bytes);
+  var result = await aes.encryptFile(payload['source_path'],payload['des_path']);
   Duration duration = DateTime.now().difference(beforeenc);
   print('Entity encryption completed in '+ duration.inMilliseconds.toString()+' milliseconds');
-  await sourceFile.delete();
-  return base64Url.encode(cipherText.iv);
-
+  var request = await Permission.storage.request();
+  if(request.isGranted){
+    try{
+      await sourceFile.delete();
+      print('deleted source file successfully');
+    }
+    on FileSystemException catch(e){
+      print(e.message);
+      StorageChannelService channelService = StorageChannelService();
+      if(await channelService.deleteDocument(sourceFile.path) != true){
+        print('could not delete file on platform');
+        return null;
+      }
+    }
+   
+  }
+  if(result != null){
+    return base64Url.encode(result);
+  }
+  return null;
 }
-static Future<bool> decryptFile(Map<String,dynamic> payload)async{
+
+Future<bool> forceDeleteResourceBySAF(String path) async {
+  StorageChannelService channelService = StorageChannelService();
+  if(await channelService.isStoragePermissionGranted()){
+    if(await channelService.deleteDocument(path) != true){
+      return false;
+    }
+    return true;
+  } else {
+    if(await confirmDialog(message:'Please choose the root directory of your external storage (e.g usdcard1) on the following screen to grant $APPNAME write permission')){
+      if(await channelService.requestStorageAccess(await this.getStoragePathByEntity(path))){
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+     
+}
+Future<bool> forceCreateFile(File desPath) async {
+  try{
+    await desPath.create(recursive: true);
+    return true;
+  }
+  catch(e){
+    print(e.toString());
+    print('trying to create file via platform channel.');
+    bool result = await StorageChannelService().createDocument(desPath.path);
+    return result;
+  }
+}
+Future<bool> decryptFile(Map<String,dynamic> payload)async{
    File sourceFile = new File(payload['source_path']);
    File desFile = new File(payload['des_path']);
    if(await sourceFile.exists() == false) return false;
-   if(await desFile.exists() == false) await desFile.create(recursive:true);
+   if(await desFile.exists() == false){
+      bool res = await this.forceCreateFile(desFile);
+      if(res != true) return false;
+   }
    nc.SecretKey key = nc.SecretKey.fromBytes(base64Url.decode(payload['key']),algorithm:nc.CipherAlgorithm.AES);
    nc.AESCipher aes = nc.AESCipher(key,nc.CipherParameters(
     nc.BlockCipherMode.CBC,nc.PlainTextPadding.PKCS5
   ));
   DateTime beforedec = DateTime.now();
-  var sourceData = await sourceFile.readAsBytes();
-  nc.CipherText cipherText = nc.AESCipherText(sourceData,base64Url.decode(payload['iv_string']));
-  var decrypted = await aes.decrypt(cipherText);   
-  await desFile.writeAsBytes(decrypted);  
+  Uint8List iv = base64Url.decode(payload['iv_string']);
+  bool decryption = await aes.decryptFile(payload['source_path'],payload['des_path'],iv);    
   Duration duration = DateTime.now().difference(beforedec);
   print('Entity decryption completed in '+duration.inMilliseconds.toString()+' milliseconds');
-  await sourceFile.delete();
-  return true;
-   
+  if(decryption == true){
+    await sourceFile.delete();
+    return true;
+  }
+  return false;
 }
 
 }

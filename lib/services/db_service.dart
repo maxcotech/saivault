@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class DBService extends GetxService{
 
-   final databaseName = 'maxco10';
+   final databaseName = 'maxco11';
    Database _db;
    Database get db => this._db;
    Future<DBService> init() async {

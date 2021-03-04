@@ -1,11 +1,12 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 
 mixin FileExtension{
   Widget getFileTypeIcon(FileSystemEntity entity,{String path}){
     if(entity is Directory){
-      return Icon(Icons.folder);
+      return CircleAvatar(child:Icon(Icons.folder),radius:23);
     }
     else if(entity is File){
       File file = entity;
@@ -22,6 +23,21 @@ mixin FileExtension{
       if(this.isDocument(file.path)){
         return CircleAvatar(child:Icon(LineIcons.book),radius:23);
       }
+      if(this.isSpreadsheet(file.path)){
+        return CircleAvatar(child:Icon(Icons.table_view));
+      }
+      if(this.isMusic(file.path)){
+        return CircleAvatar(child:Icon(Icons.music_note));
+      }
+      if(this.isCompressed(file.path)){
+        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:23);
+      }
+      if(this.isHtml(file.path)){
+        return CircleAvatar(child:Icon(LineIcons.html5),radius:23);
+      }
+      if(this.isPresentation(file.path)){
+        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:23);
+      }
       return CircleAvatar(child:Icon(LineIcons.file),radius:23);
     }else{
       if(path != null){
@@ -35,10 +51,22 @@ mixin FileExtension{
         return CircleAvatar(child:Icon(Icons.image_sharp),radius:23);
       }
       if(this.isFolder(path)){
-        return Icon(Icons.folder);
+        return CircleAvatar(child:Icon(Icons.folder),radius:23);
+      }
+      if(this.isSpreadsheet(path)){
+        return CircleAvatar(child:Icon(Icons.table_view));
+      }
+      if(this.isMusic(path)){
+        return CircleAvatar(child:Icon(Icons.music_note));
       }
       if(this.isCompressed(path)){
         return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:23);
+      }
+      if(this.isHtml(path)){
+        return CircleAvatar(child:Icon(LineIcons.html5),radius:23);
+      }
+      if(this.isPresentation(path)){
+        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:23);
       }
       }
     
@@ -104,7 +132,46 @@ mixin FileExtension{
       case 'pdf':return true;
       case 'doc':return true;
       case 'docx':return true;
+      case 'odt':return true;
+      default: return false;
+    }
+  }
+  bool isHtml(String path){
+    String extension = path.split('.').last;
+    switch(extension){
       case 'html':return true;
+      case 'htm': return true;
+      case 'xhtml': return true;
+      case 'xml':return true;
+      default: return false;
+    }
+  }
+  bool isPresentation(String path){
+    String extension = path.split('.').last;
+    switch(extension){
+      case 'ppt':return true;
+      case 'pptx':return true;
+      default: return false;
+    }
+  }
+  bool isSpreadsheet(String path){
+    String extension = path.split('.').last;
+    switch(extension){
+      case 'ods':return true;
+      case 'xls':return true;
+      case 'xlsx':return true;
+      default: return false;
+    }
+  }
+  bool isMusic(String path){
+    String extension = path.split('.').last;
+    switch(extension){
+      case 'mp3':return true;
+      case 'flac':return true;
+      case 'm4a':return true;
+      case 'wav':return true;
+      case 'wma':return true;
+      case 'aac':return true;
       default: return false;
     }
   }
