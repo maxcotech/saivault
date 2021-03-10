@@ -17,7 +17,7 @@ class FileEncryption with PathMixin {
     if (await sourceFile.exists() == false) return null;
     if (await desFile.exists() == false) {
       if (await desFile.exists() == false) {
-        bool res = await this.forceCreateFile(desFile,mimeType: 'multipart/encrypted');
+        bool res = await this.forceCreateFile(desFile,mimeType: 'application/octet-stream');
         if (res != true) return null;
       }
     }

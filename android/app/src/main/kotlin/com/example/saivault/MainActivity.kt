@@ -199,11 +199,12 @@ class MainActivity: FlutterActivity() {
     }
     
     public fun getMimeType(url: String?): String? {
-        var type: String? = null;
+        var type: String? = "application/unknown";
         if(url != null) {
             val extension = MimeTypeMap.getFileExtensionFromUrl(url!!);
             if (extension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                var mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if(mime != null) type = mime;
             }
             return type;
         }

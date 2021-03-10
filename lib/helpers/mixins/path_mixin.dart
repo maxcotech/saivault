@@ -124,15 +124,18 @@ mixin PathMixin{
 
   String generateSpaceFreeFileName(String path,{String replaceWith:"_"}){
     ///generates file name where all space are replaced with the value of 
-    ///replace with parameter.
+    ///replace with parameter.     
+    String newFileName;
     if(path == null || path.isEmpty) return null;
     if(path.contains('/')){
       String fileName = path.split('/').last;
-      fileName = fileName.replaceAll(" ",replaceWith);
-      return fileName;
+      newFileName = fileName.replaceAll(" ",replaceWith);
     } else {
-      return path.replaceAll(" ",replaceWith);
+      newFileName = path.replaceAll(" ",replaceWith);
     }
+    if(newFileName == null) return null;
+    if(newFileName.contains(new RegExp(r"[^a-zA-Z0-9\.\(\)_]"))) newFileName = newFileName.replaceAll(new RegExp(r"[^a-zA-Z0-9\.\(\)_]"),"");
+    return newFileName;
   }
   
   String removeFileExtension(String path){
