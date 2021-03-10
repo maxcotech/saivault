@@ -1,5 +1,6 @@
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:path/path.dart';
+import 'package:saivault/services/app_service.dart';
 import 'package:uuid/uuid.dart';
 
 mixin PathMixin{
@@ -25,6 +26,26 @@ mixin PathMixin{
     }
     
   }
+  Future<String> getRemovableStoragePath() async {
+    List<StorageInfo> storageInfos = await PathProviderEx.getStorageInfo();
+    if(storageInfos != null && storageInfos.length > 0){
+      int len = storageInfos.length;
+      return storageInfos[len - 1].rootDir;
+    } else {
+      return "/storage/emulated/0";
+    }
+  }
+
+  Future<String> removeRootFromPath(String path) async {
+    String newPath = path;
+    String rootDir = await getPathStorageDir(newPath);
+    if(rootDir != null){
+      String entityPath = newPath.replaceFirst(rootDir,"");
+      if(entityPath.startsWith('/')) entityPath = entityPath.replaceFirst('/','');
+      return entityPath;
+    }
+    return null;
+  }
 
   Future<String> getStoragePathByEntity(String entityPath) async {
     List<StorageInfo> storageInfos = await PathProviderEx.getStorageInfo();
@@ -46,9 +67,9 @@ mixin PathMixin{
     }
     return null;
   }
-  Future<String> generateCryptPathFromOriginal(String path)async{
+  Future<String> generateCryptPathFromOriginal(String path, AppService appService)async{
     if(path.isEmpty) return null;
-    String prefixPath = await this.encryptedFilePath();
+    String prefixPath = await this.encryptedFilePath(appService.getStorageLocationIndex());
     List<String> segments = path.split('/');
     List<String> newSegments = new List<String>();
     segments.forEach((String item){
@@ -68,9 +89,9 @@ mixin PathMixin{
     String newPath = newSegments.join('/');
     return join(prefixPath,newPath);
   }
-  Future<String> encryptedFilePath()async{
+  Future<String> encryptedFilePath(int storageIndex)async{
     List<StorageInfo> info = await PathProviderEx.getStorageInfo();
-    String externalRoot = info[0].rootDir;
+    String externalRoot = info[storageIndex].rootDir;
     String appExternalPath = '.maxwell/recovery_path';
     return join(externalRoot,appExternalPath);
   }
@@ -78,4 +99,64 @@ mixin PathMixin{
     Uuid uuid = new Uuid();
     return uuid.v4();
   }
+
+  Future<String> getPathStorageDir(String path) async {
+    if(path == null || path.isEmpty) return null;
+    List<StorageInfo> stores = await PathProviderEx.getStorageInfo();
+    for(StorageInfo info in stores){
+      if(path.contains(info.rootDir) && path.startsWith(info.rootDir)){
+        return info.rootDir;
+      }
+    }
+    return null;
+  }
+
+  bool fileNameContainsSpace(String path){
+    ///checks if the file name contains space
+    if(path == null || path.isEmpty) return false;
+    if(path.contains('/')){
+      String fileName = path.split('/').last;
+      return fileName.contains(" ");
+    } else {
+      return path.contains(" ");
+    }
+  }
+
+  String generateSpaceFreeFileName(String path,{String replaceWith:"_"}){
+    ///generates file name where all space are replaced with the value of 
+    ///replace with parameter.
+    if(path == null || path.isEmpty) return null;
+    if(path.contains('/')){
+      String fileName = path.split('/').last;
+      fileName = fileName.replaceAll(" ",replaceWith);
+      return fileName;
+    } else {
+      return path.replaceAll(" ",replaceWith);
+    }
+  }
+  
+  String removeFileExtension(String path){
+    if(path.contains(".")){
+      List<String> segments = path.split(".");
+      segments.removeAt(segments.length - 1);
+      if(segments.length > 1){
+        return segments.join(".");
+      } else {
+        return segments[segments.length - 1];
+      }
+    } else {
+      return path;
+    }
+  }
+
+  String replaceEntityOnPath(String path,String newEntityName){
+    List<String> pathSegs = path.split('/');
+    pathSegs.last = newEntityName;
+    String newPath = pathSegs.join('/');
+    return newPath;
+  }
+
+  
+
+
 }

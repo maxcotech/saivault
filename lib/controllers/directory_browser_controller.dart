@@ -2,19 +2,26 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:get/get.dart';
+import 'package:saivault/controllers/file_storage_controller.dart';
 
 class DirectoryBrowserController extends Controller{
   String path;
   int _filterOption = 0;
   List<FileSystemEntity> entities;
+  FileStorageController storageController;
 
   int get filterOption => this._filterOption;
   @override 
   Future<void> onInit()async{
     path = Get.arguments as String;
     entities = await this.getFileSystemEntities();
+    storageController = Get.find<FileStorageController>();
     this.update();
     super.onInit();
+  }
+  void onToggleAllToTrack(){
+    storageController.toggleAppendDirectoryContentToTrack(entities);
+    this.update();
   }
   Future<List<FileSystemEntity>> getFileSystemEntities()async{
     List<FileSystemEntity> entities = new List<FileSystemEntity>();

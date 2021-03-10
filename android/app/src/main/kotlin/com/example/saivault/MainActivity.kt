@@ -48,6 +48,12 @@ class MainActivity: FlutterActivity() {
                   val response = createDocument(fileName!!,mimeType);
                   result.success(response);
               }
+              "renameDocument" -> {
+                val filePath = call.argument<String>("file_path");
+                val newFileName = call.argument<String>("new_file_name");
+                val response = renameDocument(filePath!!,newFileName!!);
+                result.success(response);
+              }
               "deleteDocument" -> {
                   val docPath = call.argument<String>("doc_path");
                   //val res: Boolean? = deleteDocument(getApplicationContext(),docPath!!);
@@ -76,7 +82,13 @@ class MainActivity: FlutterActivity() {
           }
         }
     }
-    public fun getDocumentFileByPath(docPath: String):DocumentFile? {
+    public fun getDocumentFileByName(fileName: String):DocumentFile? {
+      var documentFile = DocumentFile.fromTreeUri(getApplicationContext(),getUri()!!);
+      var fileDocument = documentFile?.findFile(fileName);
+      return fileDocument;
+    }
+    
+    public fun getDocumentFileByPath(docPath: String, createPaths: Boolean = false):DocumentFile? {
         try{
             if (docPath == null) throw Exception("Arguments Not found");
             var documentFile = DocumentFile.fromTreeUri(getApplicationContext(), getUri()!!);
@@ -85,6 +97,10 @@ class MainActivity: FlutterActivity() {
               var nextfile = documentFile?.findFile(parts[i]); 
               if(nextfile != null){
                 documentFile = nextfile;
+              } else {
+                if(createPaths == true){
+                  documentFile = documentFile?.createDirectory(parts[i])
+                }
               }
             }
             if(documentFile != null){
@@ -196,18 +212,35 @@ class MainActivity: FlutterActivity() {
     }
 
     public fun createDocument(filePath: String,mimeType: String?): Boolean{
-        var parentPath = getDocumentParentPath(filePath);
-        var parentDir = getDocumentFileByPath(parentPath);
         var mime = if(mimeType != null) mimeType else getMimeType(filePath);
-        var arr = filePath.split("/");
-        arr = arr.toMutableList();
-        var fileName = arr[arr.size - 1];
-        var result = parentDir?.createFile(mime!!,fileName!!);
-        return if(result == null){
-            false;
+        if(filePath.contains("/")){
+          var parentPath = getDocumentParentPath(filePath);
+          var parentDir = getDocumentFileByPath(parentPath,true);
+          var arr = filePath.split("/");
+          arr = arr.toMutableList();
+          var fileName = arr[arr.size - 1];
+          var result = parentDir?.createFile(mime!!,fileName!!);
+          return if(result == null){
+              false;
+          } else {
+              true;
+          }
         } else {
-            true;
+          var documentFile = DocumentFile.fromTreeUri(getApplicationContext(), getUri()!!);
+          var result = documentFile?.createFile(mime!!,filePath);
+          return if(result == null) false; else true;
         }
+    }
+
+    public fun renameDocument(filePath: String,newFileName: String):Boolean{
+      var documentFile = if(filePath.contains("/")){
+         getDocumentFileByPath(filePath);
+      } else {
+         getDocumentFileByName(filePath);
+      }
+      if(documentFile == null) return false;
+      var resp = documentFile?.renameTo(newFileName);
+      return if(resp == true) resp; else false;
     }
         
     override fun onSaveInstanceState(outState: Bundle) {

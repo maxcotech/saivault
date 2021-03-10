@@ -16,6 +16,7 @@ class LoginController extends Controller{
   KeyService _store;
   bool get showPassword => this._showPassword;
   AppService get appService => this._appService;
+  KeyService get store => this._store;
   TextEditingController get password => this._password;
   @override 
   Future<void> onInit()async{
@@ -36,9 +37,9 @@ class LoginController extends Controller{
     }
     return true;
   }
-  String generateFirstPassHash(String salt){
+  String generateFirstPassHash(String salt,String pass){
     PBKDF2 hasher = new PBKDF2();
-    String hash = hasher.generateBase64Key(this._password.text, salt,1000,16);
+    String hash = hasher.generateBase64Key(pass, salt,1000,16);
     return hash;
   }
 
@@ -79,7 +80,7 @@ class LoginController extends Controller{
         Get.offNamed('/setup');
         return;
       }
-      String inputHash = this.generateFirstPassHash(passwordSalt);
+      String inputHash = this.generateFirstPassHash(passwordSalt,this._password.text);
       if(!this.isPasswordCorrect(inputHash,passwordHash)){
         getDialog(message:"The password you entered is incorrect.",status:Status.error);
         return;

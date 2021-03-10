@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:saivault/controllers/directory_browser_controller.dart';
 import 'package:get/get.dart';
@@ -18,13 +19,15 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
       appBar: AppBar(
         title:Text(controller.path != null? controller.path.split('/').last:'Loading...'),
         actions:<Widget>[
+          IconButton(icon:Icon(Icons.add),onPressed:control.onToggleAllToTrack,tooltip:'Track all files in this directory.'),
           IconButton(icon:Icon(Icons.search),onPressed:(){
             showSearch(context:context,delegate:DirectorySearchDelegate(
               controller:controller,
               storageControl:storageControl
               ));
-          }),
-          IconButton(icon:Icon(Icons.home),onPressed:()=>Get.until((route)=>Get.currentRoute == '/'))
+          },tooltip:'Search for files in this directory.'),
+          IconButton(icon:Icon(Icons.home),onPressed:()=>Get.until((route)=>Get.currentRoute == '/'),
+            tooltip:'Go back to home view.')
         ]
       ),
       body:_body()

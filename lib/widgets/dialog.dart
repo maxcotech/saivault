@@ -27,7 +27,7 @@ void getDialog({String message,Status status = Status.success}){
 
   Get.dialog(AlertDialog(
     title:Icon(getIconData(),color:getIconColor(),size:45),
-    content:Text(message,style:TextStyle(fontSize:16)),
+    content:Text(message,style:TextStyle(fontSize:16),textAlign: TextAlign.center),
     actions:[FlatButton(child:Text('OK',style:TextStyle(fontSize:16,fontWeight:FontWeight.bold)),
            onPressed:()=>Get.back())]
     

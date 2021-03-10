@@ -56,6 +56,18 @@ class StorageChannelService with PathMixin{
      }
    }
 
+   Future<bool> renameDocument(String filePath, String newFileName) async {
+     try{
+       Map<String,dynamic> payload = <String,dynamic>{'file_path':filePath,'new_file_name':newFileName};
+       bool result = await channel.invokeMethod('renameDocument',payload);
+       return result;
+     }
+     on PlatformException catch(e){
+       print(e.toString());
+       return false;
+     }
+   }
+
    Future<dynamic> methodCallHandler(MethodCall call)async{
       switch(call.method){
         case 'resolveWithSDCardUri': this.onResolveWithSDCardUri(call.arguments as String);break;

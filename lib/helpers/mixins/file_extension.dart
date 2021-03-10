@@ -4,24 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 
 mixin FileExtension{
+  double avatarSize = 20;
   Widget getFileTypeIcon(FileSystemEntity entity,{String path}){
     if(entity is Directory){
-      return CircleAvatar(child:Icon(Icons.folder),radius:23);
+      return CircleAvatar(child:Icon(Icons.folder),radius:avatarSize);
     }
     else if(entity is File){
       File file = entity;
       if(this.isImage(file.path)){
         if(file.existsSync()){
-          return CircleAvatar(backgroundImage:FileImage(file,scale:2),radius:23);
+          return CircleAvatar(backgroundImage:FileImage(file,scale:2),radius:avatarSize);
         }else{
-          return CircleAvatar(child:Icon(Icons.image),radius:23);
+          return CircleAvatar(child:Icon(Icons.image),radius:avatarSize);
         }
       }
       if(this.isVideo(file.path)){
-        return CircleAvatar(child:Icon(Icons.videocam),radius:23);
+        return CircleAvatar(child:Icon(Icons.videocam),radius:avatarSize);
       }
       if(this.isDocument(file.path)){
-        return CircleAvatar(child:Icon(LineIcons.book),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.book),radius:avatarSize);
       }
       if(this.isSpreadsheet(file.path)){
         return CircleAvatar(child:Icon(Icons.table_view));
@@ -30,28 +31,28 @@ mixin FileExtension{
         return CircleAvatar(child:Icon(Icons.music_note));
       }
       if(this.isCompressed(file.path)){
-        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:avatarSize);
       }
       if(this.isHtml(file.path)){
-        return CircleAvatar(child:Icon(LineIcons.html5),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.html5),radius:avatarSize);
       }
       if(this.isPresentation(file.path)){
-        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:avatarSize);
       }
-      return CircleAvatar(child:Icon(LineIcons.file),radius:23);
+      return CircleAvatar(child:Icon(LineIcons.file),radius:avatarSize);
     }else{
       if(path != null){
         if(this.isVideo(path)){
-      return CircleAvatar(child:Icon(Icons.videocam),radius:23);
+      return CircleAvatar(child:Icon(Icons.videocam),radius:avatarSize);
       }
       if(this.isDocument(path)){
-        return CircleAvatar(child:Icon(LineIcons.book),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.book),radius:avatarSize);
       }
       if(this.isImage(path)){
-        return CircleAvatar(child:Icon(Icons.image_sharp),radius:23);
+        return CircleAvatar(child:Icon(Icons.image_sharp),radius:avatarSize);
       }
       if(this.isFolder(path)){
-        return CircleAvatar(child:Icon(Icons.folder),radius:23);
+        return CircleAvatar(child:Icon(Icons.folder),radius:avatarSize);
       }
       if(this.isSpreadsheet(path)){
         return CircleAvatar(child:Icon(Icons.table_view));
@@ -60,17 +61,17 @@ mixin FileExtension{
         return CircleAvatar(child:Icon(Icons.music_note));
       }
       if(this.isCompressed(path)){
-        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.file_zip_o),radius:avatarSize);
       }
       if(this.isHtml(path)){
-        return CircleAvatar(child:Icon(LineIcons.html5),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.html5),radius:avatarSize);
       }
       if(this.isPresentation(path)){
-        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:23);
+        return CircleAvatar(child:Icon(LineIcons.file_powerpoint_o),radius:avatarSize);
       }
       }
     
-      return CircleAvatar(child:Icon(Icons.file_present),radius:23);
+      return CircleAvatar(child:Icon(Icons.file_present),radius:avatarSize);
     }
   }
   bool isCompressed(String path){

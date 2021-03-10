@@ -39,6 +39,7 @@ dependencies:
   cryptography_flutter:
   circular_check_box:
   isolate_handler: ^0.3.1
+  shared_preferences:
   native_crypto:
     git:
       url: https://gogs.pointcheval.fr/hugo/native-crypto-flutter.git
