@@ -67,7 +67,7 @@ class MainActivity: FlutterActivity() {
                         documentFile = nextfile;
                       }
                     }
-                    if(documentFile != null && documentFile.isFile()){
+                    if(documentFile != null){
                       documentFile.delete();
                     }else{
                       throw Exception("File Not Found");
