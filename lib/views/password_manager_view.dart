@@ -46,7 +46,11 @@ class PasswordManagerView extends GetView<PasswordManagerController>{
             model:controller.savedPasswords.elementAt(index),index:index);
         });
     }else{
-      return EmptyWidget();
+      return EmptyWidget(
+        message:'You have not saved any password yet.',
+        btnLabel:'GET STARTED',
+        onClickBtn:() => Get.toNamed('add_password')
+        );
     }
   }
 }

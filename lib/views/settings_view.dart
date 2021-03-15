@@ -30,6 +30,35 @@ class SettingsView extends StatelessWidget{
           trailing:Icon(CupertinoIcons.forward)
         ),
         ListTile(
+          leading:Icon(controller.appService.shouldShowPathOnBrowser()? 
+          Icons.visibility_rounded: Icons.visibility_off_outlined),
+          title:Text('Show Paths on Browser'),
+          trailing:SizedBox(
+            width:55,
+            child:Switch(
+            onChanged: (bool val) => controller.setShowPathOnBrowser(val),
+            value: controller.appService.shouldShowPathOnBrowser(),))
+        ),
+        ListTile(
+          leading:Icon(controller.appService.shouldShowPathOnManager()? 
+          Icons.visibility_rounded: Icons.visibility_off_outlined),
+          title:Text('Show Paths on Manager'),
+          trailing:SizedBox(
+            width:55,
+            child:Switch(
+            onChanged: (bool val) => controller.setShowPathOnManager(val),
+            value: controller.appService.shouldShowPathOnManager(),))
+        ),
+        ListTile(
+          leading:Icon(Icons.mode_rounded),
+          title:Text('Dark Mode'),
+          trailing:SizedBox(
+            width:55,
+            child:Switch(
+            onChanged: (bool val) => controller.mainControl.setThemeMode(val),
+            value: controller.appService.isDarkThemeMode(),))
+        ),
+        ListTile(
           leading:Icon(Icons.help),
           title:Text('Help and Guidelines'),
           trailing:Icon(CupertinoIcons.forward)

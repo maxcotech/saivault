@@ -3,15 +3,18 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:saivault/controllers/controller.dart';
+import 'package:saivault/controllers/main_controller.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:flutter/material.dart';
 
 class SettingsController extends Controller{
   List<StorageInfo> storageList;
   AppService appService;
+  MainController mainControl;
   @override
   Future<void> onInit() async {
     this.storageList = await PathProviderEx.getStorageInfo();
+    mainControl = Get.find<MainController>();
     this.appService = Get.find<AppService>();
     super.onInit();
   }
@@ -27,6 +30,16 @@ class SettingsController extends Controller{
     return "";
   }
 
+  Future<void> setShowPathOnBrowser(bool value) async {
+    await appService.setShouldShowPathOnBrowser(value);
+    this.update();
+  }
+
+  Future<void> setShowPathOnManager(bool value) async {
+    await appService.setShouldShowPathOnManager(value);
+    this.update();
+  }
+
   Future<void> onChooseNewStorageLocation() async {
     int val = await chooseNewStorageLocation();
     if(val != null){
@@ -37,10 +50,16 @@ class SettingsController extends Controller{
     }
   }
 
+  Future<void> setThemeMode(bool value) async {
+    await appService.setThemeMode(value);
+    this.update();
+  }
+
   Future<int> chooseNewStorageLocation()async{
     int result = await Get.bottomSheet<int>(Container(
       padding:EdgeInsets.only(top:20,left:15,right:15,bottom:15),
-      decoration: BoxDecoration(color:Colors.white,
+      decoration: BoxDecoration(
+      color:Get.theme.scaffoldBackgroundColor,
       borderRadius:BorderRadius.only(topRight:Radius.circular(10),topLeft:Radius.circular(10))),
       child:Column(
         mainAxisSize: MainAxisSize.min,

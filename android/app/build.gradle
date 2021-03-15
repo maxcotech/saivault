@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.saivault"
+        applicationId "com.maxcotechpro.saivault"
         minSdkVersion 18
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
@@ -62,3 +62,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.documentfile:documentfile:1.0.1"
 }
+apply plugin: 'com.google.gms.google-services'

@@ -27,5 +27,41 @@ class AppService extends GetxService{
   Future<bool> setStorageLocationIndex(int value) async {
     return await pref.setInt(STORAGE_KEY, value);
   }
+  bool shouldShowPathOnBrowser(){
+    if(pref.containsKey(SHOW_ENTITY_PATH_ON_BROWSER)){
+      return pref.get(SHOW_ENTITY_PATH_ON_BROWSER);
+    } else {
+      return true;
+    }
+  }
+  bool shouldShowPathOnManager(){
+    if(pref.containsKey(SHOW_ENTITY_PATH_ON_MANAGER)){
+      return pref.get(SHOW_ENTITY_PATH_ON_MANAGER);
+    } else {
+      return false;
+    }
+  }
+
+  bool isDarkThemeMode(){
+    if(pref.containsKey(THEME_MODE)){
+      return pref.get(THEME_MODE);
+    } else {
+      return true;
+    }
+  }
+  
+  Future<bool> setThemeMode(bool val) async {
+    return await pref.setBool(THEME_MODE,val);
+  }
+
+  Future<bool> setShouldShowPathOnBrowser(bool value) async {
+    return await pref.setBool(SHOW_ENTITY_PATH_ON_BROWSER,value);
+  }
+  Future<bool> setShouldShowPathOnManager(bool value) async {
+    return await pref.setBool(SHOW_ENTITY_PATH_ON_MANAGER,value);
+  }
+
+  
+  
   
 }

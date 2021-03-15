@@ -86,7 +86,7 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
                 onTap:()=>Get.toNamed('/directory_browser',arguments:entity.path,preventDuplicates:false),
                 leading:storageControl.getFileTypeIcon(entity),
                 title:Text(entity.path.split('/').last),
-                subtitle:Text(entity.path),
+                subtitle: controller.appService.shouldShowPathOnBrowser()?Text(entity.path):null,
                 trailing:CircularCheckBox(value:storageControl.pathIsSelected(entity.path),
                 onChanged:(bool newval){
                   storageControl.toggleAppendPathsToTrack(entity.path);

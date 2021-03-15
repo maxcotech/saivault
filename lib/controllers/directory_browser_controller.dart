@@ -3,12 +3,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/file_storage_controller.dart';
+import 'package:saivault/services/app_service.dart';
 
 class DirectoryBrowserController extends Controller{
   String path;
   int _filterOption = 0;
   List<FileSystemEntity> entities;
   FileStorageController storageController;
+  AppService appService;
 
   int get filterOption => this._filterOption;
   @override 
@@ -16,6 +18,7 @@ class DirectoryBrowserController extends Controller{
     path = Get.arguments as String;
     entities = await this.getFileSystemEntities();
     storageController = Get.find<FileStorageController>();
+    appService = Get.find<AppService>();
     this.update();
     super.onInit();
   }

@@ -33,7 +33,10 @@ class FileManagerView extends StatelessWidget with FileExtension{
   }
   Widget _entityList(){
     if(controller.hiddenFiles == null || controller.hiddenFiles.length == 0){
-      return EmptyWidget(message:'You dont have any file/directory to track.');
+      return EmptyWidget(
+        message:'You dont have any file/directory to track.',
+        onClickBtn: controller.onClickAdd
+      );
     }else{
       return ListView.builder(
         itemCount:controller.hiddenFiles.length,
@@ -44,6 +47,7 @@ class FileManagerView extends StatelessWidget with FileExtension{
             shape:Border(bottom:BorderSide(color:Colors.black)),
             leading:this.getFileTypeIcon(this.generateEntityFromPathSync(item.originalPath),path:item.originalPath),
             title:Text(item.originalPath.split('/').last),
+            subtitle:controller.appService.shouldShowPathOnManager()?Text(item.originalPath):null,
             trailing:_trailingActions(item)
           );
         }

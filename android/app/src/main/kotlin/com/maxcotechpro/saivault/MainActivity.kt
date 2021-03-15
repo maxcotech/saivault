@@ -1,4 +1,4 @@
-package com.example.saivault
+package com.maxcotechpro.saivault
 
 import io.flutter.embedding.android.FlutterActivity
 import androidx.annotation.NonNull

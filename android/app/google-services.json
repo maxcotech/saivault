@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "419281189144",
+    "project_id": "saivault",
+    "storage_bucket": "saivault.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419281189144:android:51948ef77d6450eb61066d",
+        "android_client_info": {
+          "package_name": "com.maxcotechpro.saivault"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "419281189144-gidqs0ft8id4b69fff096rmtg8pfcjq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_F0IQZN7xtAjXWJ8_ZkzbFnzM8VrMpR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "419281189144-gidqs0ft8id4b69fff096rmtg8pfcjq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
