@@ -2,21 +2,27 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/widgets.dart';
 import 'package:saivault/controllers/login_controller.dart';
+import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:get/get.dart';
 import 'package:encrypt/encrypt.dart' as e;
 
-class EditAppPasswordController extends LoginController{
+class EditAppPasswordController extends LoginController with ConnectionMixin{
   TextEditingController _password,_confirmPassword,_oldPassword;
+  SettingsController settings;
   TextEditingController get password => this._password;
   TextEditingController get confirmPassword => this._confirmPassword;
   TextEditingController get oldPassword => this._oldPassword;
+
 
   @override
   Future<void> onInit() async {
     this._password = new TextEditingController();
     this._confirmPassword = new TextEditingController();
     this._oldPassword = new TextEditingController();
+    this.settings = Get.find<SettingsController>();
+
     await super.onInit();
   }
   bool validateInputs(){
@@ -82,6 +88,10 @@ class EditAppPasswordController extends LoginController{
             if(res != -1) Get.rawSnackbar(message:'Your password was changed successfully.',duration:Duration(seconds:4));
             this.clearInputs();
             this.setLoading(false);
+            if(await this.isConnectedToInternet()){
+              await this.settings.backupDatabase();
+              Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
+            } 
         } else {
           setLoading(false);
           getDialog(message:"The Old password you entered is invalid.",status:Status.error);

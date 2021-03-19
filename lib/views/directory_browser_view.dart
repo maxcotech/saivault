@@ -61,6 +61,9 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
             child:Padding(
               padding:EdgeInsets.only(right:10,left:5),
               child:RaisedButton(
+                elevation: 0,
+                color:Colors.transparent,
+                shape:Border.all(color:Colors.blue),
                 onPressed:()=> Get.until((route) => Get.currentRoute == '/'),
                 child:Text('CANCEL')
               )
@@ -83,7 +86,11 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
             itemBuilder:(BuildContext context,int index){
               FileSystemEntity entity = entities[index];
               return ListTile(
-                onTap:()=>Get.toNamed('/directory_browser',arguments:entity.path,preventDuplicates:false),
+                onTap:()async{
+                  if(await FileSystemEntity.isDirectory(entity.path)){
+                    Get.toNamed('/directory_browser',arguments:entity.path,preventDuplicates:false);
+                  }
+                },
                 leading:storageControl.getFileTypeIcon(entity),
                 title:Text(entity.path.split('/').last),
                 subtitle: controller.appService.shouldShowPathOnBrowser()?Text(entity.path):null,

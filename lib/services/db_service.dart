@@ -1,15 +1,15 @@
 import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:saivault/config/app_constants.dart';
 
 class DBService extends GetxService{
 
-   final databaseName = 'maxco11';
    Database _db;
    Database get db => this._db;
    Future<DBService> init() async {
      String path = await getDatabasesPath();
-     String dbPath = join(path,this.databaseName+".db");
+     String dbPath = join(path,DATABASE_NAME);
      this._db = await this.initDatabase(dbPath);
      return this;
    }

@@ -2,14 +2,17 @@ import 'dart:math';
 import 'package:password_hash/password_hash.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/services/key_service.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as e;
 import 'dart:convert';
+import 'package:saivault/config/app_constants.dart';
+import 'package:saivault/services/drive_services.dart';
 import 'package:get/get.dart';
 
-class SetupController extends Controller{
+class SetupController extends Controller with ConnectionMixin{
    KeyService keyService;
    bool _showPassword = false;
    TextEditingController _password;
@@ -70,6 +73,36 @@ class SetupController extends Controller{
      List<int> values = List<int>.generate(32,(i)=>rand.nextInt(256));
      String crypto = base64Url.encode(values);
      return crypto;
+   }
+
+   Future<void> onDataRecovery() async {
+     try{
+       this.setLoading(true);
+       if(await this.isConnectedToInternet() == false){
+         getDialog(message:'Sorry, you do not have an intenet connection.',status:Status.error);
+         return;
+       }
+       var dService = await DriveServices().init();
+       var fileId = await dService.getIdOfNamedFile(DATABASE_NAME);
+       if(fileId != null){
+         var result = await dService.downloadDatabaseFile(fileId);
+         if(result != null && await result.exists()){
+           Get.rawSnackbar(message:'Data recovery successful.',duration: Duration(seconds:2));
+           Get.toNamed('/login');
+         } else {
+          getDialog(message:'Could not restore app data, please try again.',status:Status.error);
+         }
+       } else {
+         getDialog(message:'Sorry, could not find any previously backedup data file.',status:Status.error);
+       }
+       this.setLoading(false);
+     }
+     catch(e,stack){
+       this.setLoading(false);
+       getDialog(message:e.toString(),status:Status.error);
+       print(stack.toString());
+       print(e.toString());
+     }
    }
 
    bool validateInputs(){

@@ -96,6 +96,9 @@ class FileManagerView extends StatelessWidget with FileExtension{
             child:Padding(
               padding:EdgeInsets.only(right:10,left:5),
               child:RaisedButton(
+                elevation: 0,
+                color:Colors.transparent,
+                shape:Border.all(color:Colors.blue),
                 onPressed:controller.onRestoreAllTrackedEntities,
                 child:Text('RESTORE ALL')
               )

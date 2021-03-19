@@ -1,13 +1,22 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:saivault/controllers/main_controller.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:flutter/material.dart';
+import 'package:saivault/services/drive_services.dart';
+import 'package:path/path.dart';
+import 'package:saivault/widgets/dialog.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:saivault/config/app_constants.dart';
+import 'dart:io';
 
-class SettingsController extends Controller{
+
+class SettingsController extends Controller with ConnectionMixin{
   List<StorageInfo> storageList;
   AppService appService;
   MainController mainControl;
@@ -38,6 +47,45 @@ class SettingsController extends Controller{
   Future<void> setShowPathOnManager(bool value) async {
     await appService.setShouldShowPathOnManager(value);
     this.update();
+  }
+
+  void onDownloadFile() async {
+     DriveServices dServices = await DriveServices().init();
+     await dServices.getBackedUpFiles();
+  }
+
+  Future backupDatabase() async {
+    DriveServices dServices = await DriveServices().init();
+    File file = new File(join(await getDatabasesPath(),DATABASE_NAME));
+    if(await file.exists() == false) print('file does not exist.'); else print('db exists.');
+    await dServices.uploadFileToDrive(file);
+    return;
+  }
+
+  Future onBackupDatabase() async {
+    this.setLoading(true);
+    if(await this.isConnectedToInternet() == false){
+      getDialog(
+        status:Status.error,
+        message:'Sorry, it seems like you are not connected to the internet, please check your network connection and try again.');
+      return;
+    }
+    try{
+      await this.backupDatabase();
+      this.setLoading(false);
+      Get.rawSnackbar(message:'Database backup completed.',duration:Duration(seconds:2));
+    }
+    on PlatformException catch(e,stacktrace){
+      this.setLoading(false);
+      print(e.message+" "+stacktrace.toString());
+      getDialog(message:"Sorry, an error occurred, please check your network configuration and try again.",status:Status.error);
+    }
+    catch(e,stacktrace){
+      this.setLoading(false);
+      print(stacktrace.toString());
+      print(e.toString());
+      getDialog(message:e.toString(),status:Status.error);
+    }
   }
 
   Future<void> onChooseNewStorageLocation() async {

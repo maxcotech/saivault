@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart' show TextEditingController;
 import 'package:saivault/controllers/controller.dart';
 import 'package:saivault/controllers/password_manager_controller.dart';
+import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/models/password_model.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
@@ -9,10 +11,11 @@ import 'package:saivault/widgets/dialog.dart';
 import 'package:get/get.dart';
 import 'package:encrypt/encrypt.dart';
 
-class AddPasswordController extends Controller{
+class AddPasswordController extends Controller with ConnectionMixin{
   TextEditingController _passwordLabel;
   TextEditingController _passwordValue;
   PasswordManagerController pmController;
+  SettingsController settings;
   bool _showPassword = false;
   DBService dbService;
   KeyService store;
@@ -91,6 +94,11 @@ class AddPasswordController extends Controller{
        getDialog(message:'Your new password was saved successfully.',status:Status.success);
       _passwordValue.clear();
       _passwordLabel.clear();
+       if(await this.isConnectedToInternet()){
+          this.settings = Get.find<SettingsController>();
+          await this.settings.backupDatabase();
+          Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
+        } 
       }
       else{getDialog(message:'An error occurred, could not save your password.',status:Status.error);}
       this.setLoading(false);

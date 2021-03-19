@@ -5,6 +5,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:saivault/controllers/file_manager_controller.dart';
+import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/helpers/mixins/file_extension.dart';
 import 'package:saivault/helpers/mixins/path_mixin.dart';
 import 'package:saivault/models/hidden_file_model.dart';
@@ -16,12 +18,13 @@ import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:saivault/config/app_constants.dart';
 
-class FileStorageController extends Controller with FileExtension, PathMixin {
+class FileStorageController extends Controller with FileExtension, PathMixin, ConnectionMixin{
   List<String> _pathsToTrack;
   DBService dbService;
   AppService appService;
   FileManagerController mController;
   StorageChannelService channelService;
+  SettingsController settings;
   List<String> get pathsToTrack => this._pathsToTrack;
   @override
   Future<void> onInit() async {
@@ -99,6 +102,10 @@ class FileStorageController extends Controller with FileExtension, PathMixin {
     if(await channelService.isStoragePermissionGranted()){
       try {
         await this.trackSelected();
+        if(await this.isConnectedToInternet()){
+          await this.settings.backupDatabase();
+          Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
+        } 
       } catch (e) {
         this.setLoading(false);
         getDialog(message: e.toString(), status: Status.error);

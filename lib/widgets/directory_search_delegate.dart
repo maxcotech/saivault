@@ -54,6 +54,15 @@ class DirectorySearchDelegate extends SearchDelegate with FileExtension{
           );
         }));
   }
+
+   @override
+   ThemeData appBarTheme(BuildContext context) => Get.theme.copyWith(
+      primaryColor: Get.isDarkMode? Colors.black : Colors.white,
+      primaryIconTheme: Get.theme.primaryIconTheme.copyWith(color: Colors.grey),
+      primaryColorBrightness: Get.isDarkMode? Brightness.dark : Brightness.light,
+      primaryTextTheme: Get.theme.textTheme,
+    );
+
   
   @override 
   Widget buildSuggestions(BuildContext context){

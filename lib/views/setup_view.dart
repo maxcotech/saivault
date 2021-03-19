@@ -44,7 +44,9 @@ class SetupView extends GetView<SetupController>{
           SizedBox(height:10),
           _toggleVisibilityWidget(),
           SizedBox(height:10),
-          _submitButton()
+          _submitButton(),
+          SizedBox(height:10),
+          _recoveryBtn()
       ])
     );
   }
@@ -54,6 +56,20 @@ class SetupView extends GetView<SetupController>{
       title:Text('Password Visibility'),
       value: controller.showPassword, 
       onChanged: controller.togglePasswordVisibility
+      );
+  }
+
+  Widget _recoveryBtn(){
+     return SizedBox(
+      height:48,
+      width:Get.size.width,
+      child:RaisedButton(
+        elevation: 0,
+        color:Colors.transparent,
+        shape:Border.all(color:Colors.blue),
+        child:Text(controller.isLoading?'RECOVERING...':'DATA RECOVERY'),
+        onPressed:controller.onDataRecovery
+      )
       );
   }
 

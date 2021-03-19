@@ -40,6 +40,10 @@ dependencies:
   circular_check_box:
   isolate_handler: ^0.3.1
   shared_preferences:
+  firebase_auth:
+  googleapis:
+  google_sign_in:
+  http:
   native_crypto:
     git:
       url: https://gogs.pointcheval.fr/hugo/native-crypto-flutter.git

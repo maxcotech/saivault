@@ -2,14 +2,17 @@ import 'package:encrypt/encrypt.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/password_manager_controller.dart';
+import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/models/password_model.dart';
 import 'package:flutter/material.dart' show TextEditingController;
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:saivault/widgets/dialog.dart';
 
-class EditPasswordController extends Controller{
+class EditPasswordController extends Controller with ConnectionMixin{
   PasswordModel model;
+  SettingsController settings;
   TextEditingController _label;
   TextEditingController _password;
   TextEditingController get label => this._label;
@@ -45,6 +48,11 @@ class EditPasswordController extends Controller{
       if(result != -1){
         getDialog(message:'Password Successfully edited',status:Status.success);
         await pmanager.loadSavedPasswords();
+        if(await this.isConnectedToInternet()){
+          this.settings = Get.find<SettingsController>();
+          await this.settings.backupDatabase();
+          Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
+        } 
       }
       this.setLoading(false);
     }

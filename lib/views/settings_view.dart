@@ -58,11 +58,19 @@ class SettingsView extends StatelessWidget{
             onChanged: (bool val) => controller.mainControl.setThemeMode(val),
             value: controller.appService.isDarkThemeMode(),))
         ),
+         ListTile(
+          onTap:controller.onBackupDatabase,
+          leading:Icon(Icons.info),
+          title:Text('Backup your data'),
+          trailing:Icon(CupertinoIcons.forward)
+        ),
         ListTile(
           leading:Icon(Icons.help),
           title:Text('Help and Guidelines'),
+          onTap:controller.onDownloadFile,
           trailing:Icon(CupertinoIcons.forward)
         ),
+       
         ListTile(
           leading:Icon(Icons.apps_sharp),
           title:Text('About'),

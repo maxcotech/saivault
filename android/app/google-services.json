@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "419281189144-tcklaj3lome4p3k7qu0nrfq9thtov3ii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maxcotechpro.saivault",
+            "certificate_hash": "bc28fdc0f78b1afe68e7e451a563c429d64c65db"
+          }
+        },
+        {
           "client_id": "419281189144-gidqs0ft8id4b69fff096rmtg8pfcjq4.apps.googleusercontent.com",
           "client_type": 3
         }
