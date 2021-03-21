@@ -27,7 +27,12 @@ class FileManagerView extends StatelessWidget with FileExtension{
         IconButton(
           icon:Icon(Icons.folder),
           onPressed:controller.onClickAdd
-          )
+          ),
+        IconButton(
+          icon:Icon(Icons.refresh),
+          tooltip: 'Sync your records with file system.',
+          onPressed:controller.onSyncFiles
+        )
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'package:saivault/controllers/password_manager_controller.dart';
 import 'package:saivault/widgets/empty_widget.dart';
 import 'package:saivault/widgets/password_search_delegate.dart';
 import 'package:saivault/widgets/password_widget.dart';
+import 'package:saivault/widgets/generated_password_view.dart';
 
 class PasswordManagerView extends GetView<PasswordManagerController>{
   @override 
@@ -31,7 +32,13 @@ class PasswordManagerView extends GetView<PasswordManagerController>{
           onPressed:()async{
             await showSearch(context:context,delegate:PasswordSearchDelegate());
           }
+        ),
+        IconButton(
+          tooltip:'Generate password using the password generator',
+          icon:Icon(LineIcons.key),
+          onPressed:() => onShowPasswordView()
         )
+
       ]
     );
   }

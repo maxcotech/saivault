@@ -16,6 +16,7 @@ import 'package:saivault/services/storage_channel_service.dart';
 import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:saivault/config/app_constants.dart';
+import 'package:saivault/services/file_sync_service.dart';
 
 class FileManagerController extends Controller
     with FileExtension, PathMixin, EncryptionMixin {
@@ -399,6 +400,28 @@ class FileManagerController extends Controller
     } catch (e) {
       this.setLoading(false);
       getDialog(message: e.toString(), status: Status.error);
+    }
+  }
+  void onSyncFiles() async {
+    try{
+      this.setLoading(true);
+      if(this._hiddenFiles != null && this._hiddenFiles.length > 0){
+        FileSyncService fService = new FileSyncService(this._hiddenFiles);
+        await fService.syncTrackedEntities();
+        await this.loadTrackFiles();
+        Get.rawSnackbar(
+           message:'Records successfully synced with file system.',
+           duration: Duration(seconds:3));
+      } else {
+        Get.rawSnackbar(
+          message:'No record to synchronize.',duration: Duration(seconds:2));
+      }
+      this.setLoading(false);
+    } catch(e,stack){
+      this.setLoading(false);
+      getDialog(message:'Failed to Synchronize records with file system.',status:Status.error);
+      print(stack.toString());
+      print(e.toString());
     }
   }
 }

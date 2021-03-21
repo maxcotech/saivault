@@ -6,4 +6,4 @@ const String SHOW_ENTITY_PATH_ON_MANAGER = "show_entity_path_on_manager";
 const String THEME_MODE = "theme_mode";
 const String DRIVE_PARENT_FOLDER = "saivault_backups";
 const String DATABASE_NAME = "maxco11.db";
-
+const String APP_VERSION = "0.0.1";

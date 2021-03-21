@@ -10,7 +10,6 @@ import 'package:saivault/widgets/empty_widget.dart';
 
 class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
   final FileStorageController storageControl = Get.find<FileStorageController>();
-  //final DirectoryBrowserController controller = Get.find<DirectoryBrowserController>();
   @override 
   Widget build(BuildContext context){
     return GetBuilder(
