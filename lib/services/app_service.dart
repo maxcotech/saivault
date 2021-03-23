@@ -2,15 +2,19 @@ import 'package:get/get.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:saivault/config/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppService extends GetxService{
   Key _encryptionKey;
   SharedPreferences _pref;
   Key get encryptionKey => this._encryptionKey;
+  PackageInfo packageInfo;
   SharedPreferences get pref => this._pref;
   
   Future<AppService> init() async {
     this._pref= await SharedPreferences.getInstance();
+    this.packageInfo = await PackageInfo.fromPlatform();
     return this;
   }
   void setAppEncryptionKey(String key){
@@ -39,6 +43,12 @@ class AppService extends GetxService{
       return pref.get(SHOW_ENTITY_PATH_ON_MANAGER);
     } else {
       return false;
+    }
+  }
+
+  void launchUrl(String url) async {
+    if(await canLaunch(url)){
+      await launch(url,forceWebView:true,enableJavaScript: true);
     }
   }
 

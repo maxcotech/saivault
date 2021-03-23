@@ -39,7 +39,8 @@ Widget _btns(PasswordManagerController pmControl){
         elevation: 0,
         color:Colors.transparent,
         shape:Border.all(color:Colors.blue),
-        child:Text('SAVE'),onPressed:(){}))
+        child:Text('SAVE'),
+        onPressed:pmControl.onSavePassword))
     ]
   ));
 }

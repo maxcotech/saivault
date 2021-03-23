@@ -103,10 +103,15 @@ class PasswordManagerController extends Controller{
     Clipboard.setData(new ClipboardData(text:this.generatedPassControl.text));
     Get.rawSnackbar(message:'Password copied to clipboard.',duration:Duration(seconds:3));
   }
+
+  void onSavePassword(){
+    if(this.generatedPassControl.text.isNotEmpty){
+      Get.offNamed("/add_password",arguments:this.generatedPassControl.text);
+    } else {
+      Get.rawSnackbar(message:'No password to change.',duration:Duration(seconds:3));
+    }
+  }
   
-
-
-
   void generatePassword(){
     try{
       PasswordGeneratorService pService = new PasswordGeneratorService();

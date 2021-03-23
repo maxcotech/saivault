@@ -20,14 +20,17 @@ class AddPasswordController extends Controller with ConnectionMixin{
   DBService dbService;
   KeyService store;
   AppService appService;
+  String argument = "";
   TextEditingController get passwordLabel => this._passwordLabel;
   TextEditingController get passwordValue => this._passwordValue;
   bool get showPassword => this._showPassword;
   @override 
   void onInit(){
-    
+    if(Get.arguments != null){
+      this.argument = Get.arguments as String;
+    }
     _passwordLabel = new TextEditingController();
-    _passwordValue = new TextEditingController();
+    _passwordValue = new TextEditingController(text:this.argument);
     pmController = Get.find<PasswordManagerController>();
     dbService = Get.find<DBService>();
     store = Get.find<KeyService>();

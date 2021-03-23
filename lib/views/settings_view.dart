@@ -12,10 +12,10 @@ class SettingsView extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar:AppBar(title:Text('Settings')),
-      body:GetBuilder(builder:(control)=>_body(),init:SettingsController())
+      body:GetBuilder(builder:(control)=>_body(context:context),init:SettingsController())
     );
   }
-  Widget _body(){
+  Widget _body({BuildContext context}){
     return ListView(
       padding:EdgeInsets.only(top:10),
       children:<Widget>[
@@ -27,7 +27,7 @@ class SettingsView extends StatelessWidget{
           trailing:Icon(CupertinoIcons.forward)
           ),
         ListTile(
-          leading:CircleAvatar(child:Icon(Icons.storage)),
+          leading:CircleAvatar(child:Icon(Icons.disc_full_outlined)),
           title:Text('Storage Location'),
           subtitle: Text(controller.getCurrentStoragePathString()),
           onTap:controller.onChooseNewStorageLocation,
@@ -56,7 +56,7 @@ class SettingsView extends StatelessWidget{
             value: controller.appService.shouldShowPathOnManager(),))
         ),
         ListTile(
-          leading:CircleAvatar(child:Icon(Icons.mode_rounded)),
+          leading:CircleAvatar(child:Icon(LineIcons.street_view)),
           title:Text('Dark Mode'),
           subtitle:Text('Toggle theme modes.'),
           trailing:SizedBox(
@@ -67,24 +67,34 @@ class SettingsView extends StatelessWidget{
         ),
          ListTile(
           onTap:controller.onBackupDatabase,
-          leading:CircleAvatar(child:Icon(Icons.info)),
+          leading:CircleAvatar(child:Icon(LineIcons.info)),
           title:Text('Backup your data'),
           subtitle:Text('This will enable you to backup your records, which includes your saved passwords, currently tracked file system entities and encrypted security credencials.'),
           trailing:Icon(CupertinoIcons.forward)
         ),
         ListTile(
-          leading:CircleAvatar(child:Icon(Icons.help)),
+          leading:CircleAvatar(child:Icon(LineIcons.question_circle)),
           title:Text('Help and Guidelines'),
           subtitle:Text('Contains guides necessary to get you started with using the features offered by $APPNAME.'),
-          onTap:controller.onDownloadFile,
+          onTap:() => Get.toNamed('/guidelines_menu'),
           trailing:Icon(CupertinoIcons.forward)
         ),
-       
         ListTile(
+          leading:CircleAvatar(child:Icon(Icons.library_books)),
+          onTap: ()=> showLicensePage(
+            context: context,
+            applicationVersion: "v ${controller.appService.packageInfo.version}",
+            applicationLegalese:"Developed By Maxcotech"),
+          title:Text('App Licenses'),
+          subtitle:Text('Browse license of App dependencies and dev tools.'),
+          trailing:Icon(CupertinoIcons.forward)
+        ),
+         ListTile(
           leading:CircleAvatar(child:Icon(Icons.apps_sharp)),
           title:Text('About'),
-          subtitle:Text('v $APP_VERSION'),
-          trailing:Icon(CupertinoIcons.forward)
+          subtitle:Text('v ${controller.appService.packageInfo.version}'),
+          trailing:Icon(CupertinoIcons.forward),
+          onTap:() => Get.toNamed('/about_page')
         )
       ]
     );

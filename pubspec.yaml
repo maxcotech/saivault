@@ -44,6 +44,8 @@ dependencies:
   googleapis:
   google_sign_in:
   http:
+  url_launcher:
+  package_info:
   native_crypto:
     git:
       url: https://gogs.pointcheval.fr/hugo/native-crypto-flutter.git
@@ -55,7 +57,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_native_splash:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
