@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:new_version/new_version.dart';
 import 'package:saivault/config/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info/package_info.dart';
@@ -48,8 +49,12 @@ class AppService extends GetxService{
 
   void launchUrl(String url) async {
     if(await canLaunch(url)){
-      await launch(url,forceWebView:true,enableJavaScript: true);
+      await launch(url,enableJavaScript: true);
     }
+  }
+  void checkNewAppUpdate() async {
+    final newVersion = new NewVersion(context: Get.context);
+    newVersion.showAlertIfNecessary();
   }
 
   bool isDarkThemeMode(){

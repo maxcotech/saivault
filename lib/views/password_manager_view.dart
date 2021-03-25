@@ -37,6 +37,11 @@ class PasswordManagerView extends GetView<PasswordManagerController>{
           tooltip:'Generate password using the password generator',
           icon:Icon(LineIcons.key),
           onPressed:() => onShowPasswordView()
+        ),
+        IconButton(
+          tooltip: 'Open user guides.',
+          icon:Icon(LineIcons.question_circle),
+          onPressed:() => Get.toNamed('/password_guide_view')
         )
 
       ]

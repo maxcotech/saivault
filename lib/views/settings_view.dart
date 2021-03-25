@@ -83,11 +83,19 @@ class SettingsView extends StatelessWidget{
           leading:CircleAvatar(child:Icon(Icons.library_books)),
           onTap: ()=> showLicensePage(
             context: context,
+            applicationIcon:Image.asset('assets/saivault.png'),
             applicationVersion: "v ${controller.appService.packageInfo.version}",
             applicationLegalese:"Developed By Maxcotech"),
           title:Text('App Licenses'),
           subtitle:Text('Browse license of App dependencies and dev tools.'),
           trailing:Icon(CupertinoIcons.forward)
+        ),
+        ListTile(
+          leading:CircleAvatar(child:Icon(Icons.update_rounded)),
+          title:Text('App Update'),
+          subtitle:Text('Check if a newer version of $APPNAME is available on Play Store.'),
+          trailing:Icon(CupertinoIcons.forward),
+          onTap:() => controller.appService.checkNewAppUpdate()
         ),
          ListTile(
           leading:CircleAvatar(child:Icon(Icons.apps_sharp)),

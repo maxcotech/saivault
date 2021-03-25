@@ -46,6 +46,7 @@ dependencies:
   http:
   url_launcher:
   package_info:
+  new_version:
   native_crypto:
     git:
       url: https://gogs.pointcheval.fr/hugo/native-crypto-flutter.git
@@ -58,6 +59,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_native_splash:
+  flutter_launcher_icons:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -73,6 +75,7 @@ flutter:
   assets:
     - assets/svg/lock.svg
     - assets/svg/not_found.svg
+    - assets/saivault.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -100,3 +103,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  color: "#ffffff"
+  background_image: "assets/saivault.png"
+  color_dark: "#000000"
+  background_image_dark: "assets/saivault.png"
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/saivault.png"

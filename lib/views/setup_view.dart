@@ -11,6 +11,7 @@ class SetupView extends GetView<SetupController>{
     return Scaffold(
       appBar: _appBar(),
       body: GetBuilder(
+        init:SetupController(),
         builder:(SetupController control)=>_body())
     );
   }

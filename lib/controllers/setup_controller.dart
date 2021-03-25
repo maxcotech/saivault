@@ -80,6 +80,7 @@ class SetupController extends Controller with ConnectionMixin{
        this.setLoading(true);
        if(await this.isConnectedToInternet() == false){
          getDialog(message:'Sorry, you do not have an intenet connection.',status:Status.error);
+         this.setLoading(false);
          return;
        }
        var dService = await DriveServices().init();

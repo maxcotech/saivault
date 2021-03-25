@@ -121,7 +121,7 @@ class FileSyncService {
           await this.syncDirectory(model);
           break;
         default:
-          print('Nothing to sync in this path.');
+          await this.syncFile(model);
       }
     }
   }

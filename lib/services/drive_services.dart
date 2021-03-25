@@ -2,6 +2,7 @@ import 'dart:io' as io;
 import 'dart:typed_data';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:saivault/config/app_constants.dart';
 import 'package:saivault/http/google_client.dart';
 import 'package:saivault/services/app_service.dart';
@@ -59,6 +60,8 @@ class DriveServices{
   }
 
   Future<io.File> downloadDatabaseFile(String fileId) async {
+    var request = await ph.Permission.storage.request();
+    if(request.isGranted == false) return null;
     if(this.driveApi == null) throw new Exception('Backup Service was not properly initialized.');
     Media file = await driveApi.files.get(fileId,downloadOptions: DownloadOptions.FullMedia);
     String saveFilePath = join(await getDatabasesPath(),DATABASE_NAME);

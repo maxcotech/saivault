@@ -8,8 +8,10 @@ import 'package:saivault/views/directory_browser_view.dart';
 import 'package:saivault/views/edit_password_view.dart';
 import 'package:saivault/views/file_storage_view.dart';
 import 'package:saivault/views/guidelines_menu.dart';
+import 'package:saivault/views/hider_guide_view.dart';
 import 'package:saivault/views/home_view.dart';
 import 'package:saivault/views/login_view.dart';
+import 'package:saivault/views/password_guide_view.dart';
 import 'package:saivault/views/setup_view.dart';
 
 
@@ -25,6 +27,8 @@ List<GetPage> pages(){
     GetPage(name:"/directory_browser",page:() => DirectoryBrowserView()),
     GetPage(name:"/change_password",page:() => EditAppPasswordView()),
     GetPage(name:"/guidelines_menu",page:() => GuidelinesMenu()),
-    GetPage(name:"/about_page",page:() => AboutView())
+    GetPage(name:"/about_page",page:() => AboutView()),
+    GetPage(name:"/password_guide_view",page:() => PasswordGuideView()),
+    GetPage(name:"/hider_guide_view",page:() => HiderGuideView())
   ];
 }

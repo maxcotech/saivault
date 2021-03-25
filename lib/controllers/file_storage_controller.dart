@@ -32,6 +32,7 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
     appService = Get.find<AppService>();
     this._pathsToTrack = new List<String>();
     mController = Get.find<FileManagerController>();
+    settings = Get.find<SettingsController>();
     channelService = new StorageChannelService();
     super.onInit();
   }

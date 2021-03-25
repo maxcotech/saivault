@@ -16,6 +16,7 @@ Widget _textField(PasswordManagerController pmControl,{String label,TextEditingC
         minLines: 1,
         maxLines:50,
         decoration: InputDecoration(
+          labelStyle:TextStyle(fontSize:20),
           suffixIcon: suffix,
           labelText:label,
           border:OutlineInputBorder(borderSide: BorderSide.none),
@@ -26,7 +27,7 @@ Widget _textField(PasswordManagerController pmControl,{String label,TextEditingC
 
 Widget _btns(PasswordManagerController pmControl){
   return Padding(
-    padding:EdgeInsets.only(left:10,right:10,top:20),
+    padding:EdgeInsets.only(left:10,right:10,top:25),
     child:Row(
     children:<Widget>[
       Expanded(
@@ -62,28 +63,28 @@ Future onShowPasswordView() async {
           Text('Password Generator',style:TextStyle(fontSize:15)),
           SizedBox(height:20),
           ListTile(
-            leading:Icon(LineIcons.arrow_circle_o_right),
+            //leading:Icon(LineIcons.arrow_circle_o_right),
             title:Text('Include Lowercase Letters'),
             trailing:Switch(
              onChanged: pmControl.setShouldHaveLowerAlpha,
              value: pmControl.pService.shouldHaveLowerAlpha())
           ),
           ListTile(
-            leading:Icon(LineIcons.arrow_circle_o_right),
+            //leading:Icon(LineIcons.arrow_circle_o_right),
             title:Text('Include Uppercase Letters'),
             trailing:Switch(
               onChanged: pmControl.setShouldHaveUpperAlpha,
               value: pmControl.pService.shouldHaveUpperAlpha())
           ),
           ListTile(
-            leading:Icon(LineIcons.arrow_circle_o_right),
+           // leading:Icon(LineIcons.arrow_circle_o_right),
             title:Text('Include Numerals'),
             trailing:Switch(
               onChanged: pmControl.setShouldHaveNumerals, 
               value: pmControl.pService.shouldHaveNumerals())
           ),
           ListTile(
-            leading:Icon(LineIcons.arrow_circle_o_right),
+            //leading:Icon(LineIcons.arrow_circle_o_right),
             title:Text('Include Non-Alphanumerals'),
             trailing:Switch(
               onChanged: pmControl.setShouldHaveNonAlphaNumerals , 

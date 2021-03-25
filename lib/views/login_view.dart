@@ -12,7 +12,7 @@ class LoginView extends StatelessWidget{
     return Scaffold(
       appBar:AppBar(
         title:Text('User Login')),
-      body:GetBuilder(builder:(LoginController control)=>_body())
+      body:GetBuilder(builder:(LoginController control)=>_body(),init:LoginController())
     );
   }
  Widget _body(){
