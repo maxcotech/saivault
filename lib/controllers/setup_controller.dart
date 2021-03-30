@@ -3,31 +3,31 @@ import 'package:password_hash/password_hash.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
+import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/key_service.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as e;
 import 'dart:convert';
-import 'package:saivault/config/app_constants.dart';
-import 'package:saivault/services/drive_services.dart';
 import 'package:get/get.dart';
+
 
 class SetupController extends Controller with ConnectionMixin{
    KeyService keyService;
    bool _showPassword = false;
    TextEditingController _password;
    TextEditingController _confirmPassword;
-   KeyService _store;
+   DBService dbService;
    TextEditingController get password => this._password;
    TextEditingController get confirmPassword => this._confirmPassword;
 
    @override 
    Future<void> onInit()async{
-     keyService = Get.find<KeyService>();
+     this.keyService = Get.find<KeyService>();
+     dbService = Get.find<DBService>();
      this._password = new TextEditingController();
      this._confirmPassword = new TextEditingController();
      if(await keyService.contains('encryption_key') == true) Get.offNamed('/login');
-     this._store = Get.find<KeyService>();
      super.onInit();
    }
    bool get showPassword => this._showPassword;
@@ -41,7 +41,7 @@ class SetupController extends Controller with ConnectionMixin{
      String passHash =await this.generateFirstPassHash();
      await this.encryptAndSaveKey(randKey,passHash);
      String secondHash = this.generateSecondPassHash(passHash);
-     await _store.write('user_password',secondHash);
+     await keyService.write('user_password',secondHash);
      print('password set');
      Get.offNamed('/login');
    }
@@ -49,7 +49,7 @@ class SetupController extends Controller with ConnectionMixin{
        PBKDF2 hasher = new PBKDF2();
        String salt = Salt.generateAsBase64String(6);
        String hash = hasher.generateBase64Key(this._password.text, salt,1000,16);
-       await _store.write('password_salt',salt);
+       await keyService.write('password_salt',salt);
        return hash;
     }
     
@@ -58,8 +58,8 @@ class SetupController extends Controller with ConnectionMixin{
      e.IV iv = e.IV.fromLength(16);
      final encrypter = e.Encrypter(e.AES(key));
      e.Encrypted encrypted = encrypter.encrypt(data,iv:iv);
-     await _store.write('encryption_key',encrypted.base64);
-     await _store.write('encryption_key_iv',iv.base64);
+     await keyService.write('encryption_key',encrypted.base64);
+     await keyService.write('encryption_key_iv',iv.base64);
      return;
    }
    String generateSecondPassHash(String passHash){
@@ -75,27 +75,18 @@ class SetupController extends Controller with ConnectionMixin{
      return crypto;
    }
 
-   Future<void> onDataRecovery() async {
+   Future<void> onDataRecovery({bool connectionWarning = true}) async {
      try{
        this.setLoading(true);
        if(await this.isConnectedToInternet() == false){
-         getDialog(message:'Sorry, you do not have an intenet connection.',status:Status.error);
+         if(connectionWarning == true){
+            getDialog(message:'Sorry, you do not have an intenet connection.',status:Status.error);
+         }
          this.setLoading(false);
          return;
        }
-       var dService = await DriveServices().init();
-       var fileId = await dService.getIdOfNamedFile(DATABASE_NAME);
-       if(fileId != null){
-         var result = await dService.downloadDatabaseFile(fileId);
-         if(result != null && await result.exists()){
-           Get.rawSnackbar(message:'Data recovery successful.',duration: Duration(seconds:2));
-           Get.toNamed('/login');
-         } else {
-          getDialog(message:'Could not restore app data, please try again.',status:Status.error);
-         }
-       } else {
-         getDialog(message:'Sorry, could not find any previously backedup data file.',status:Status.error);
-       }
+       await dbService.restoreDatabaseFromDrive();
+       if(await keyService.contains('encryption_key') == true) Get.offNamed('/login');
        this.setLoading(false);
      }
      catch(e,stack){

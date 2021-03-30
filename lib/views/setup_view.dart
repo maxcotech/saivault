@@ -4,8 +4,11 @@ import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/setup_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
+import 'package:flutter/services.dart';
+
 
 class SetupView extends GetView<SetupController>{
+ 
   @override 
   Widget build(BuildContext context){
     return Scaffold(
@@ -33,6 +36,8 @@ class SetupView extends GetView<SetupController>{
             controller:controller.password,
             obscureText: controller.showPassword? false:true,
             prefixIcon:Icon(LineIcons.lock),
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             labelText:'Enter Password',
           ),
           SizedBox(height:20),
@@ -40,6 +45,8 @@ class SetupView extends GetView<SetupController>{
             controller:controller.confirmPassword,
             obscureText:controller.showPassword? false:true,
             prefixIcon:Icon(LineIcons.lock),
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             labelText:'Confirm Password',
           ),
           SizedBox(height:10),
@@ -69,7 +76,7 @@ class SetupView extends GetView<SetupController>{
         color:Colors.transparent,
         shape:Border.all(color:Colors.blue),
         child:Text(controller.isLoading?'RECOVERING...':'DATA RECOVERY'),
-        onPressed:controller.onDataRecovery
+        onPressed:() async {if(controller.isLoading == false) {await controller.onDataRecovery();}}
       )
       );
   }

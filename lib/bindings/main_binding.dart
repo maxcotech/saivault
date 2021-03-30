@@ -5,7 +5,7 @@ import 'package:saivault/controllers/setup_controller.dart';
 class MainBinding extends Bindings{
     @override 
     void dependencies(){
-      Get.lazyPut<SetupController>(() => new SetupController());
       Get.lazyPut<HomeController>(() => new HomeController());
+      Get.lazyPut<SetupController>(() => new SetupController());
     }
 }

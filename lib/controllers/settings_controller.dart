@@ -8,6 +8,7 @@ import 'package:saivault/controllers/main_controller.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:flutter/material.dart';
+import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/drive_services.dart';
 import 'package:path/path.dart';
 import 'package:saivault/widgets/dialog.dart';
@@ -20,11 +21,13 @@ class SettingsController extends Controller with ConnectionMixin{
   List<StorageInfo> storageList;
   AppService appService;
   MainController mainControl;
+  DBService dbService;
   @override
   Future<void> onInit() async {
     this.storageList = await PathProviderEx.getStorageInfo();
     mainControl = Get.find<MainController>();
     this.appService = Get.find<AppService>();
+    this.dbService = Get.find<DBService>();
     super.onInit();
   }
   String getCurrentStoragePathString(){
@@ -55,10 +58,7 @@ class SettingsController extends Controller with ConnectionMixin{
   }
 
   Future backupDatabase() async {
-    DriveServices dServices = await DriveServices().init();
-    File file = new File(join(await getDatabasesPath(),DATABASE_NAME));
-    if(await file.exists() == false) print('file does not exist.'); else print('db exists.');
-    await dServices.uploadFileToDrive(file);
+    await dbService.createBackupOnDrive();
     return;
   }
 

@@ -7,3 +7,5 @@ const String THEME_MODE = "theme_mode";
 const String DRIVE_PARENT_FOLDER = "saivault_backups";
 const String DATABASE_NAME = "maxco11.db";
 const String APP_VERSION = "0.0.1";
+const int MAX_PASSWORD_LENGTH = 99999;
+const String APP_TERMS_URL = "https://saivault.maxcotechpro.com/terms-and-conditions";

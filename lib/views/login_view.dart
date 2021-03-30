@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,6 +31,8 @@ class LoginView extends StatelessWidget{
             obscureText: controller.showPassword ? false:true,
             prefixIcon:Icon(LineIcons.lock),
             labelText:'Enter Password',
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             suffixIcon: IconButton(
                 icon:Icon(controller.showPassword? Icons.visibility:Icons.visibility_off),
                 onPressed:controller.togglePasswordVisibility

@@ -3,6 +3,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/home_controller.dart';
 import 'package:saivault/views/file_manager_view.dart';
+import 'package:saivault/views/more_view.dart';
 import 'package:saivault/views/password_manager_view.dart';
 import 'package:saivault/views/settings_view.dart';
 
@@ -15,6 +16,7 @@ class HomeView extends GetView<HomeController>{
       PasswordManagerView(),
       FileManagerView(),
       SettingsView(),
+      MoreView()
   ];
 
   @override 
@@ -26,6 +28,11 @@ class HomeView extends GetView<HomeController>{
   }
   BottomNavigationBar _bottomBar(){
     return BottomNavigationBar(
+      showUnselectedLabels: true,
+      elevation:1,
+      unselectedItemColor: Colors.grey,
+      selectedItemColor: Colors.blue,
+      iconSize:26,
       currentIndex:controller.currentIndex,
       items:_bottomBarItems(),
       onTap:controller.setCurrentIndex
@@ -44,6 +51,10 @@ class HomeView extends GetView<HomeController>{
       BottomNavigationBarItem(
         icon: Icon(LineIcons.gears),
         label: 'Settings'
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.more_horiz_outlined),
+        label: 'More'
       )
     ];
   }

@@ -72,38 +72,8 @@ class SettingsView extends StatelessWidget{
           subtitle:Text('This will enable you to backup your records, which includes your saved passwords, currently tracked file system entities and encrypted security credencials.'),
           trailing:Icon(CupertinoIcons.forward)
         ),
-        ListTile(
-          leading:CircleAvatar(child:Icon(LineIcons.question_circle)),
-          title:Text('Help and Guidelines'),
-          subtitle:Text('Contains guides necessary to get you started with using the features offered by $APPNAME.'),
-          onTap:() => Get.toNamed('/guidelines_menu'),
-          trailing:Icon(CupertinoIcons.forward)
-        ),
-        ListTile(
-          leading:CircleAvatar(child:Icon(Icons.library_books)),
-          onTap: ()=> showLicensePage(
-            context: context,
-            applicationIcon:Image.asset('assets/saivault.png'),
-            applicationVersion: "v ${controller.appService.packageInfo.version}",
-            applicationLegalese:"Developed By Maxcotech"),
-          title:Text('App Licenses'),
-          subtitle:Text('Browse license of App dependencies and dev tools.'),
-          trailing:Icon(CupertinoIcons.forward)
-        ),
-        ListTile(
-          leading:CircleAvatar(child:Icon(Icons.update_rounded)),
-          title:Text('App Update'),
-          subtitle:Text('Check if a newer version of $APPNAME is available on Play Store.'),
-          trailing:Icon(CupertinoIcons.forward),
-          onTap:() => controller.appService.checkNewAppUpdate()
-        ),
-         ListTile(
-          leading:CircleAvatar(child:Icon(Icons.apps_sharp)),
-          title:Text('About'),
-          subtitle:Text('v ${controller.appService.packageInfo.version}'),
-          trailing:Icon(CupertinoIcons.forward),
-          onTap:() => Get.toNamed('/about_page')
-        )
+       
+         
       ]
     );
   }

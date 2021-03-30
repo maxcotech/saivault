@@ -19,7 +19,6 @@ Widget _textField(PasswordManagerController pmControl,{String label,TextEditingC
           labelStyle:TextStyle(fontSize:20),
           suffixIcon: suffix,
           labelText:label,
-          border:OutlineInputBorder(borderSide: BorderSide.none),
           filled:true
         )
       ));

@@ -1,6 +1,7 @@
 import 'package:encrypt/encrypt.dart' as e;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:saivault/config/app_constants.dart';
 import 'package:saivault/controllers/controller.dart';
 import 'package:saivault/models/password_model.dart';
 import 'package:saivault/services/app_service.dart';
@@ -115,6 +116,12 @@ class PasswordManagerController extends Controller{
   void generatePassword(){
     try{
       PasswordGeneratorService pService = new PasswordGeneratorService();
+      if(pService.getPassLength() > MAX_PASSWORD_LENGTH){
+        getDialog(
+          status:Status.error,
+          message:'Chief, Your password length cannot be greater than $MAX_PASSWORD_LENGTH, for obvious reasons.');
+        return;
+      }
       this.generatedPassControl.text = pService.generatePassword();
     }
     catch(e,stack){

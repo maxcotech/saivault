@@ -76,6 +76,8 @@ flutter:
     - assets/svg/lock.svg
     - assets/svg/not_found.svg
     - assets/saivault.png
+    - assets/saivault_bg_light.png
+    - assets/saivault_bg_dark.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -104,10 +106,10 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 flutter_native_splash:
+  image: "assets/saivault.png"
   color: "#ffffff"
-  background_image: "assets/saivault.png"
+  image_dark: "assets/saivault.png"
   color_dark: "#000000"
-  background_image_dark: "assets/saivault.png"
 flutter_icons:
   android: "launcher_icon"
   ios: true

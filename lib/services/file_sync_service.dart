@@ -109,16 +109,27 @@ class FileSyncService {
       }
     }
   }
+  String getProbableActivePath(HiddenFileModel model){
+    if(model == null) return null;
+    if(model.hidden == 1) {
+      return model.hiddenPath;
+    } else {
+      return model.originalPath;
+    }
+  }
 
   Future<void> syncTrackedEntities() async {
     if (_models == null || _models.length == 0) return;
     for (var model in _models) {
-      switch (await FileSystemEntity.type(model.originalPath)) {
+      switch (await FileSystemEntity.type(this.getProbableActivePath(model))) {
         case FileSystemEntityType.file:
           await this.syncFile(model);
           break;
         case FileSystemEntityType.directory:
           await this.syncDirectory(model);
+          break;
+        case FileSystemEntityType.notFound:
+          await dbService.db.delete('hidden_files', where: "id = ?", whereArgs: [model.id]);
           break;
         default:
           await this.syncFile(model);

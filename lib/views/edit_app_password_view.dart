@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/edit_app_password_controller.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
+import 'package:flutter/services.dart';
 
 class EditAppPasswordView extends StatelessWidget{
   final EditAppPasswordController controller = Get.put(EditAppPasswordController());
@@ -21,13 +22,18 @@ class EditAppPasswordView extends StatelessWidget{
           customTextField(
             prefixIcon:Icon(LineIcons.lock),
             labelText: "Enter Old Password",
-            controller:controller.oldPassword
+            controller:controller.oldPassword,
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter >[FilteringTextInputFormatter.digitsOnly],
+            
           ),
           SizedBox(height:20),
           customTextField(
             prefixIcon:Icon(LineIcons.lock),
             labelText: "Enter New Password",
             controller:controller.password,
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             obscureText: true
           ),
           SizedBox(height:20),
@@ -35,6 +41,8 @@ class EditAppPasswordView extends StatelessWidget{
             prefixIcon:Icon(LineIcons.lock),
             labelText: "Confirm New Password",
             controller:controller.confirmPassword,
+            itype:TextInputType.number,
+            inputFormatters:<TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
             obscureText: true
         
           ),
