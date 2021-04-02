@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/file_manager_controller.dart';
 import 'package:saivault/helpers/mixins/file_extension.dart';
 import 'package:saivault/models/hidden_file_model.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/empty_widget.dart';
 import 'package:saivault/widgets/loading_screen.dart';
 
@@ -65,6 +66,15 @@ class FileManagerView extends StatelessWidget with FileExtension{
     }
   }
   Widget _body(){
+    return Column(
+      children:<Widget>[
+        Expanded(child:_bodyView()),
+        BadWidget(completer:controller.completer, bads: controller.bads)
+
+      ]
+    );
+  }
+  Widget _bodyView(){
     return Column(children:<Widget>[
       Expanded(child:_entityList()),
       _pageActionBtns()

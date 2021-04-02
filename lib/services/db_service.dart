@@ -79,10 +79,9 @@ class DBService extends GetxService {
     if (fileId != null) {
       String dataString = await dService.downloadJsonById(fileId);
       if (dataString != null) {
-        Map<String, List<Map<String, dynamic>>> mapData =
-            jsonDecode(dataString);
+        var mapData = jsonDecode(dataString);
         for (String selected in this._selectedForBackup) {
-          var selectedList = mapData[selected];
+          var selectedList = mapData[selected].cast<Map<String,dynamic>>();
           if (selectedList != null && selectedList.length > 0) {
             await this.insertAll(selected, selectedList);
           }
@@ -93,7 +92,7 @@ class DBService extends GetxService {
     }
   }
 
-  Future<List<int>> insertAll(
+  Future<List<dynamic>> insertAll(
       String tableName, List<Map<String, dynamic>> payload) async {
     Batch batch = this.db.batch();
     for (var mapItem in payload) {

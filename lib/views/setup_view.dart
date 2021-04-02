@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/setup_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 import 'package:flutter/services.dart';
 
@@ -24,6 +25,12 @@ class SetupView extends GetView<SetupController>{
     );
   }
   Widget _body(){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyContent()),
+      BadWidget(completer:controller.completer, bads: controller.bads)
+    ]);
+  }
+  Widget _bodyContent(){
     return SingleChildScrollView(
       padding:EdgeInsets.only(top:35,left:15,right:15),
       child:Column(
@@ -32,7 +39,6 @@ class SetupView extends GetView<SetupController>{
           _getHeadIcon(),
           SizedBox(height:10),
           customTextField(
-            autofocus: true,
             controller:controller.password,
             obscureText: controller.showPassword? false:true,
             prefixIcon:Icon(LineIcons.lock),
@@ -96,7 +102,7 @@ class SetupView extends GetView<SetupController>{
       child:RaisedButton(
         color:Colors.blueAccent,
         child:Text('SAVE PASSWORD',style:Get.theme.textTheme.button.copyWith(color:Colors.white)),
-        onPressed:controller.savePassword
+        onPressed:controller.onSetup
       )
       );
   }

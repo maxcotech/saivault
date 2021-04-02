@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:encrypt/encrypt.dart' as e;
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:native_crypto/native_crypto.dart';
 import 'package:saivault/controllers/controller.dart';
@@ -17,6 +18,10 @@ import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:saivault/config/app_constants.dart';
 import 'package:saivault/services/file_sync_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:saivault/helpers/ad_manager.dart';
+import 'dart:async';
 
 class FileManagerController extends Controller
     with FileExtension, PathMixin, EncryptionMixin {
@@ -24,6 +29,9 @@ class FileManagerController extends Controller
   AppService appService;
   List<HiddenFileModel> _hiddenFiles;
   List<HiddenFileModel> get hiddenFiles => this._hiddenFiles;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+  BannerAd bads;
+
   Future<void> onInit() async {
     dbService = Get.find<DBService>();
     appService = Get.find<AppService>();
@@ -31,6 +39,13 @@ class FileManagerController extends Controller
     this.setLoading(true);
     await this.loadTrackFiles();
     this.setLoading(false);
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
 
@@ -92,6 +107,8 @@ class FileManagerController extends Controller
 
   Future<bool> hideEntity(String originalPath, String cryptPath, e.Key key,
       String ivString, bool isNested) async {
+    var sRequest = await Permission.storage.request();
+    if(sRequest.isGranted == false) return false;
     FileSystemEntityType entityType = await FileSystemEntity.type(originalPath);
     if (entityType == FileSystemEntityType.directory) {
       Directory folder = new Directory(originalPath);
@@ -194,6 +211,8 @@ class FileManagerController extends Controller
 
   Future<bool> restoreEntity(String originalPath, String cryptPath, e.Key key,
       String ivString, bool isNested) async {
+    var sRequest = await Permission.storage.request();
+    if(sRequest.isGranted == false) return false;
     FileSystemEntityType entityType = await FileSystemEntity.type(cryptPath);
     if (entityType == FileSystemEntityType.directory) {
       Directory folder = new Directory(cryptPath);
@@ -227,14 +246,21 @@ class FileManagerController extends Controller
 
   Future<bool> restoreFile(
       String sourcePath, String desPath, e.Key key, String ivString) async {
-    bool result = await FileEncryption().decryptFile(<String, dynamic>{
-      'des_path': desPath,
-      'source_path': sourcePath,
-      'key': key.base64,
-      'iv_string': ivString
-    });
-    if (result == false) print('file decryption returned false');
-    return result;
+    var cService = new StorageChannelService();
+    if(await cService.isStoragePermissionGranted()){
+      bool result = await FileEncryption().decryptFile(<String, dynamic>{
+        'des_path': desPath,
+        'source_path': sourcePath,
+        'key': key.base64,
+        'iv_string': ivString
+      });
+      if (result == false) print('file decryption returned false');
+      return result;
+    } else {
+      await this.requestUriPermission();
+      return false;
+    }
+    
   }
 
   Future<bool> hideFile(String sourcePath, String desPath, e.Key key,
@@ -405,7 +431,11 @@ class FileManagerController extends Controller
   void onSyncFiles() async {
     try{
       this.setLoading(true);
-      if(this._hiddenFiles != null && this._hiddenFiles.length > 0){
+      var permRequest = await Permission.storage.request();
+      if(permRequest.isGranted == false) return null;
+      var cService = new StorageChannelService();
+      if(await cService.isStoragePermissionGranted()){
+        if(this._hiddenFiles != null && this._hiddenFiles.length > 0){
         FileSyncService fService = new FileSyncService(this._hiddenFiles);
         await fService.syncTrackedEntities();
         await this.loadTrackFiles();
@@ -416,6 +446,9 @@ class FileManagerController extends Controller
         Get.rawSnackbar(
           message:'No record to synchronize.',duration: Duration(seconds:2));
       }
+      } else {
+        await this.requestUriPermission();
+      }
       this.setLoading(false);
     } catch(e,stack){
       this.setLoading(false);
@@ -423,5 +456,10 @@ class FileManagerController extends Controller
       print(stack.toString());
       print(e.toString());
     }
+  }
+  @override
+  void onClose() {
+    bads?.dispose();
+    super.onClose();
   }
 }

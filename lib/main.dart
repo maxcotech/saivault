@@ -7,11 +7,14 @@ import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/key_service.dart';
 import 'package:saivault/config/route_config.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future<void> main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   await initServices();
+
 
   runApp(GetBuilder(init:MainController(),builder:(control)=>MyApp()));
 }

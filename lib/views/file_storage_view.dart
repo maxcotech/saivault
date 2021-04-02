@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:saivault/controllers/file_storage_controller.dart';
 import 'package:get/get.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/empty_widget.dart';
 
 class FileStorageView extends GetView<FileStorageController> {
@@ -17,7 +18,14 @@ class FileStorageView extends GetView<FileStorageController> {
     );
   }
 
-  Widget _body() {
+  Widget _body(){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyView()),
+      BadWidget(completer:controller.completer, bads: controller.bads)
+    ]);
+  }
+
+  Widget _bodyView() {
     return GetBuilder(
         init: FileStorageController(),
         builder: (control) {

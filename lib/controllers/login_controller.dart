@@ -1,11 +1,14 @@
 import 'package:flutter/widgets.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:password_hash/pbkdf2.dart';
 import 'package:saivault/controllers/controller.dart';
+import 'package:saivault/helpers/ad_manager.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/key_service.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as e;
 
@@ -18,11 +21,21 @@ class LoginController extends Controller{
   AppService get appService => this._appService;
   KeyService get store => this._store;
   TextEditingController get password => this._password;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+  BannerAd bads;
+
   @override 
   Future<void> onInit()async{
     _appService = Get.find<AppService>();
     _store = Get.find<KeyService>();
     if(await _store.contains('encryption_key') == false) Get.offNamed('/setup');
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
     return;
   }
@@ -71,6 +84,8 @@ class LoginController extends Controller{
 
   }
 
+  
+
   Future<void> onLogin()async{
      try{
       if(!this.validateInput()) return;
@@ -95,6 +110,7 @@ class LoginController extends Controller{
   @override 
   void onClose(){
     _password.dispose();
+    bads?.dispose();
     super.onClose();
   }
 

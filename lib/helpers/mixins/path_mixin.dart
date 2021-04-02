@@ -1,13 +1,16 @@
 import 'package:path_provider_ex/path_provider_ex.dart';
 import 'package:path/path.dart';
 import 'package:saivault/services/app_service.dart';
+import 'package:saivault/services/storage_channel_service.dart';
+import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:uuid/uuid.dart';
+import 'package:saivault/config/app_constants.dart';
 
 mixin PathMixin{
-  /**
-   * /data/user/0/com.example.saivault/app_flutter/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider/.Camera.hider/7c2b2965-e471-4715-95fd-8e7522c15654.aes
-   * /storage/emulated/0/.maxwell/recovery_path/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider
-   */
+  
+   /// /data/user/0/com.example.saivault/app_flutter/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider/.Camera.hider/7c2b2965-e471-4715-95fd-8e7522c15654.aes
+   /// /storage/emulated/0/.maxwell/recovery_path/.storage.hider/.emulated.hider/.0.hider/.DCIM.hider
+   
   
   Future<String> extractCryptPath(String path)async{
     List<String> segments = path.split('/');
@@ -157,6 +160,20 @@ mixin PathMixin{
     pathSegs.last = newEntityName;
     String newPath = pathSegs.join('/');
     return newPath;
+  }
+
+  Future<bool> requestUriPermission() async {
+    StorageChannelService channelService = new StorageChannelService();
+    if (await confirmDialog(
+        message:
+            'Please choose the root directory of your external storage (e.g usdcard1) on the following screen to grant $APPNAME write permission')) {
+      if (await channelService.requestStorageAccess(
+          await this.getStoragePathByEntity(await this.getRemovableStoragePath()))) {
+        return false;
+      }
+      return false;
+    }
+    return false;
   }
 
   

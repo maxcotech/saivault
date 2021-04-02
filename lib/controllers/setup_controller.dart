@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/key_service.dart';
+import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:crypto/crypto.dart';
+import 'package:saivault/helpers/ad_manager.dart';
+import 'package:saivault/config/app_constants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:encrypt/encrypt.dart' as e;
 import 'dart:convert';
+import 'dart:async';
 import 'package:get/get.dart';
 
 
@@ -20,6 +25,14 @@ class SetupController extends Controller with ConnectionMixin{
    DBService dbService;
    TextEditingController get password => this._password;
    TextEditingController get confirmPassword => this._confirmPassword;
+   final String setupInfo =
+   "If this is not your first time using $APPNAME,\n"
+   "You may have data backup from previous installations.\n\n"
+   "To recover your data from previous installations, please select the RECOVER option.\n"
+   "Otherwise, select the CONTINUE option to proceed with a new setup.";
+
+   BannerAd bads;
+   Completer<BannerAd> completer = new Completer<BannerAd>();
 
    @override 
    Future<void> onInit()async{
@@ -28,6 +41,13 @@ class SetupController extends Controller with ConnectionMixin{
      this._password = new TextEditingController();
      this._confirmPassword = new TextEditingController();
      if(await keyService.contains('encryption_key') == true) Get.offNamed('/login');
+     this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
      super.onInit();
    }
    bool get showPassword => this._showPassword;
@@ -66,6 +86,17 @@ class SetupController extends Controller with ConnectionMixin{
      List<int> bytes = utf8.encode(passHash);
      Digest digest = sha256.convert(bytes);
      return digest.toString();
+   }
+
+   void onSetup() async {
+     bool result = await confirmDialog(message:this.setupInfo,okLabel:'CONTINUE',cancelLabel:'RECOVER');
+     if(result != null){
+       if(result == true){
+         await this.savePassword();
+       } else {
+         await this.onDataRecovery();
+       }
+     }
    }
 
    String generateEncryptionKey(){
@@ -120,6 +151,7 @@ class SetupController extends Controller with ConnectionMixin{
    void onClose(){
      _password.dispose();
      _confirmPassword.dispose();
+     bads?.dispose();
      super.onClose();
    }
 

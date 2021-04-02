@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/password_manager_controller.dart';
 
 Widget _textField(PasswordManagerController pmControl,{String label,TextEditingController controller,

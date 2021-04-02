@@ -13,6 +13,7 @@ import 'package:saivault/views/home_view.dart';
 import 'package:saivault/views/login_view.dart';
 import 'package:saivault/views/password_guide_view.dart';
 import 'package:saivault/views/setup_view.dart';
+import 'package:saivault/views/splash_view.dart';
 
 
 
@@ -29,6 +30,7 @@ List<GetPage> pages(){
     GetPage(name:"/guidelines_menu",page:() => GuidelinesMenu()),
     GetPage(name:"/about_page",page:() => AboutView()),
     GetPage(name:"/password_guide_view",page:() => PasswordGuideView()),
-    GetPage(name:"/hider_guide_view",page:() => HiderGuideView())
+    GetPage(name:"/hider_guide_view",page:() => HiderGuideView()),
+    GetPage(name:"/splash_view", page:() => SplashView())
   ];
 }

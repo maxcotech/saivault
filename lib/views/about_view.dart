@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:get/get.dart';
+import 'package:saivault/controllers/guide_menu_controller.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 
 class AboutView extends StatelessWidget{
   final AppService appService = Get.find<AppService>();
-  @override 
+  final GuideMenuController controller = Get.put(GuideMenuController());
+  @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar:AppBar(title:Text('About')),
-      body:_body()
-    );
+      body:GetBuilder(builder:(control){
+        controller.showIntAds();
+        return _body();},
+      init:GuideMenuController()
+    ));
   }
 
   Widget _body(){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyView()),
+      BadWidget(completer:controller.completer, bads: controller.bads),
+
+    ]);
+  }
+
+
+  Widget _bodyView(){
     return SingleChildScrollView(
       child:Container(
         padding:EdgeInsets.symmetric(horizontal:15,vertical: 15),

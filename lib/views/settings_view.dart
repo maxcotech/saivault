@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/settings_controller.dart';
-import 'package:saivault/config/app_constants.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 
 
 class SettingsView extends StatelessWidget{
@@ -12,10 +12,17 @@ class SettingsView extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar:AppBar(title:Text('Settings')),
-      body:GetBuilder(builder:(control)=>_body(context:context),init:SettingsController())
+      body:GetBuilder(builder:(control)=>_body(context),init:SettingsController())
     );
   }
-  Widget _body({BuildContext context}){
+
+  Widget _body(BuildContext context){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyView(context:context)),
+      BadWidget(completer:controller.completer, bads: controller.bads)
+    ]);
+  }
+  Widget _bodyView({BuildContext context}){
     return ListView(
       padding:EdgeInsets.only(top:10),
       children:<Widget>[

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/edit_app_password_controller.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 import 'package:flutter/services.dart';
 
@@ -11,10 +12,24 @@ class EditAppPasswordView extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar:AppBar(title:Text('Change Password')),
-      body:GetBuilder(builder:(control) => _body(),init:EditAppPasswordController())
+      body:GetBuilder(builder:(control){
+        controller.showIntAds();
+        return _body();
+        },
+        init:EditAppPasswordController())
     );
   }
-  Widget _body(){
+
+   Widget _body(){
+    return Column(
+      children:<Widget>[
+        Expanded(child:_bodyView()),
+        BadWidget(completer:controller.completer, bads: controller.bads)
+      ]
+    );
+  }
+
+  Widget _bodyView(){
     return SingleChildScrollView(
       padding:EdgeInsets.only(left:15,right:15,top:30),
       child:Column(

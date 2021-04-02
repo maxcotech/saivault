@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:saivault/controllers/login_controller.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 
 class LoginView extends StatelessWidget{
@@ -16,7 +17,14 @@ class LoginView extends StatelessWidget{
       body:GetBuilder(builder:(LoginController control)=>_body(),init:LoginController())
     );
   }
+
  Widget _body(){
+   return Column(children:<Widget>[
+     Expanded(child:_bodyContent()),
+     BadWidget(completer:controller.completer, bads: controller.bads)
+   ]);
+ }
+ Widget _bodyContent(){
     return SingleChildScrollView(
       padding:EdgeInsets.only(top:70,left:15,right:15),
       child:Column(
@@ -39,7 +47,7 @@ class LoginView extends StatelessWidget{
               )
           ),
           SizedBox(height:60),
-          _submitButton()
+          _submitButton(),
       ])
     );
   }

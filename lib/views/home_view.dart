@@ -28,6 +28,7 @@ class HomeView extends GetView<HomeController>{
   }
   BottomNavigationBar _bottomBar(){
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       showUnselectedLabels: true,
       elevation:1,
       unselectedItemColor: Colors.grey,
@@ -53,7 +54,7 @@ class HomeView extends GetView<HomeController>{
         label: 'Settings'
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.more_horiz_outlined),
+        icon: Icon(LineIcons.get_pocket), //Icon(Icons.more_horiz_outlined),
         label: 'More'
       )
     ];

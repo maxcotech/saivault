@@ -8,13 +8,12 @@ import 'package:saivault/controllers/main_controller.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:flutter/material.dart';
+import 'package:saivault/helpers/ad_manager.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/drive_services.dart';
-import 'package:path/path.dart';
 import 'package:saivault/widgets/dialog.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:saivault/config/app_constants.dart';
-import 'dart:io';
+import 'dart:async';
 
 
 class SettingsController extends Controller with ConnectionMixin{
@@ -22,12 +21,23 @@ class SettingsController extends Controller with ConnectionMixin{
   AppService appService;
   MainController mainControl;
   DBService dbService;
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+
+
   @override
   Future<void> onInit() async {
     this.storageList = await PathProviderEx.getStorageInfo();
     mainControl = Get.find<MainController>();
     this.appService = Get.find<AppService>();
     this.dbService = Get.find<DBService>();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
   String getCurrentStoragePathString(){
@@ -124,6 +134,12 @@ class SettingsController extends Controller with ConnectionMixin{
     ));
     print(result);
     return result;
+  }
+
+  @override
+  void onClose() {
+    bads?.dispose();
+    super.onClose();
   }
 
 }

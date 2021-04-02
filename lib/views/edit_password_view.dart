@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/edit_password_controller.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 
 class EditPasswordView extends StatelessWidget{
@@ -12,14 +13,25 @@ class EditPasswordView extends StatelessWidget{
       appBar:AppBar(
         title:Text('Edit Password')
       ),
-      body:_body(context)
+      body:GetBuilder(
+      builder:(EditPasswordController control)=>_body(context))
     );
   }
 
-  Widget _body(BuildContext context){
-    return GetBuilder(
-      builder:(EditPasswordController control)=>SingleChildScrollView(
-        padding:EdgeInsets.symmetric(horizontal:15,vertical:40),
+   Widget _body(BuildContext context){
+    return Column(
+      children:<Widget>[
+        Expanded(child:_bodyView(context)),
+        BadWidget(completer:controller.completer, bads: controller.bads)
+
+      ]
+    );
+  }
+
+
+  Widget _bodyView(BuildContext context){
+    return SingleChildScrollView(
+        padding:EdgeInsets.symmetric(horizontal:15,vertical:30),
         child:Column(
           children:<Widget>[
             customTextField(
@@ -41,7 +53,7 @@ class EditPasswordView extends StatelessWidget{
             _submitBtn()
           ]
         )
-      )
+      
     );
   }
   Widget _submitBtn(){

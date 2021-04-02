@@ -3,15 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:saivault/config/app_constants.dart';
 import 'package:saivault/controllers/controller.dart';
+import 'package:saivault/helpers/ad_manager.dart';
 import 'package:saivault/models/password_model.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:get/get.dart';
+import 'dart:async';
 import 'package:saivault/services/password_generator_service.dart';
 import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:saivault/helpers/isolate_helpers.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class PasswordManagerController extends Controller{
   List<PasswordModel> _savedPasswords = new List<PasswordModel>();
@@ -22,7 +25,9 @@ class PasswordManagerController extends Controller{
   AppService appService;
   
   List<PasswordModel> get savedPasswords => this._savedPasswords;
-  
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+
   @override 
   Future<void> onInit()async {
     dbService = Get.find<DBService>();
@@ -32,8 +37,16 @@ class PasswordManagerController extends Controller{
     this.generatedPassControl = new TextEditingController();
     this.pLengthControl.addListener(this.setPassLength);
     await this.loadSavedPasswords();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    this.bads.load();
     super.onInit();
   }
+
   Future<void> loadSavedPasswords() async {
     try{
       List<Map<String,dynamic>> results = await dbService.db.query('password_store');
@@ -136,6 +149,7 @@ class PasswordManagerController extends Controller{
     this.pLengthControl.removeListener(this.setPassLength);
     this.pLengthControl.dispose();
     this.generatedPassControl.dispose();
+    bads?.dispose();
     super.onClose();
   }
 }

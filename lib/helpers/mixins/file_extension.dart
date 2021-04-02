@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 
 mixin FileExtension{
-  double avatarSize = 20;
+  final double avatarSize = 20;
   Widget getFileTypeIcon(FileSystemEntity entity,{String path}){
     if(entity is Directory){
       return CircleAvatar(child:Icon(Icons.folder),radius:avatarSize);

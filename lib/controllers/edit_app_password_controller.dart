@@ -6,6 +6,9 @@ import 'package:saivault/controllers/settings_controller.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:saivault/helpers/ad_manager.dart';
+import 'dart:async';
 import 'package:encrypt/encrypt.dart' as e;
 
 class EditAppPasswordController extends LoginController with ConnectionMixin{
@@ -14,7 +17,8 @@ class EditAppPasswordController extends LoginController with ConnectionMixin{
   TextEditingController get password => this._password;
   TextEditingController get confirmPassword => this._confirmPassword;
   TextEditingController get oldPassword => this._oldPassword;
-
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
 
   @override
   Future<void> onInit() async {
@@ -22,7 +26,14 @@ class EditAppPasswordController extends LoginController with ConnectionMixin{
     this._confirmPassword = new TextEditingController();
     this._oldPassword = new TextEditingController();
     this.settings = Get.find<SettingsController>();
-
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
+    AdManager.createIntAd(this);
     await super.onInit();
   }
   bool validateInputs(){
@@ -115,6 +126,8 @@ class EditAppPasswordController extends LoginController with ConnectionMixin{
     this._password.dispose();
     this._oldPassword.dispose();
     this._confirmPassword.dispose();
+    bads?.dispose();
+    iads?.dispose();
     super.onClose();
   }
 

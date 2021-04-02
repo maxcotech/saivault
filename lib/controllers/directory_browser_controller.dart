@@ -4,6 +4,10 @@ import 'package:saivault/controllers/controller.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/file_storage_controller.dart';
 import 'package:saivault/services/app_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:saivault/helpers/ad_manager.dart';
+import 'package:flutter/material.dart' show Orientation;
+import 'dart:async';
 
 class DirectoryBrowserController extends Controller{
   String path;
@@ -11,6 +15,8 @@ class DirectoryBrowserController extends Controller{
   List<FileSystemEntity> entities;
   FileStorageController storageController;
   AppService appService;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+  BannerAd bads;
 
   int get filterOption => this._filterOption;
   @override 
@@ -20,6 +26,13 @@ class DirectoryBrowserController extends Controller{
     storageController = Get.find<FileStorageController>();
     appService = Get.find<AppService>();
     this.update();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
   void onToggleAllToTrack(){
@@ -80,5 +93,10 @@ class DirectoryBrowserController extends Controller{
     }else{
       return <FileSystemEntity>[];
     }
+  }
+  @override
+  void onClose() {
+    bads?.dispose();
+    super.onClose();
   }
 }

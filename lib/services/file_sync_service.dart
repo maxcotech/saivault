@@ -128,9 +128,6 @@ class FileSyncService {
         case FileSystemEntityType.directory:
           await this.syncDirectory(model);
           break;
-        case FileSystemEntityType.notFound:
-          await dbService.db.delete('hidden_files', where: "id = ?", whereArgs: [model.id]);
-          break;
         default:
           await this.syncFile(model);
       }

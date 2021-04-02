@@ -1,7 +1,8 @@
-import 'package:flutter/widgets.dart' show TextEditingController;
+import 'package:flutter/widgets.dart' show TextEditingController,Orientation;
 import 'package:saivault/controllers/controller.dart';
 import 'package:saivault/controllers/password_manager_controller.dart';
 import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/ad_manager.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/models/password_model.dart';
 import 'package:saivault/services/app_service.dart';
@@ -9,6 +10,8 @@ import 'package:saivault/services/db_service.dart';
 import 'package:saivault/services/key_service.dart';
 import 'package:saivault/widgets/dialog.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:async';
 import 'package:encrypt/encrypt.dart';
 
 class AddPasswordController extends Controller with ConnectionMixin{
@@ -24,6 +27,8 @@ class AddPasswordController extends Controller with ConnectionMixin{
   TextEditingController get passwordLabel => this._passwordLabel;
   TextEditingController get passwordValue => this._passwordValue;
   bool get showPassword => this._showPassword;
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
   @override 
   void onInit(){
     if(Get.arguments != null){
@@ -35,6 +40,13 @@ class AddPasswordController extends Controller with ConnectionMixin{
     dbService = Get.find<DBService>();
     store = Get.find<KeyService>();
     appService = Get.find<AppService>();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
   void togglePasswordVisibility(){
@@ -45,6 +57,8 @@ class AddPasswordController extends Controller with ConnectionMixin{
   void onClose(){
     _passwordLabel.dispose();
     _passwordValue.dispose();
+    bads?.dispose();
+    super.onClose();
   }
   Future<bool> validateInputs() async {
     if(this._passwordLabel.text.isEmpty || this._passwordLabel.text == ""){

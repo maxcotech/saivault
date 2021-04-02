@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/key_service.dart';
 
+
 class MainController extends Controller with WidgetsBindingObserver{
   bool _isSetup = false;
   bool get isSetup => this._isSetup;
@@ -31,10 +32,18 @@ class MainController extends Controller with WidgetsBindingObserver{
     return ThemeMode.light;
   }
 
+  void onAppPaused(){
+    print('CHISOM: App has been sent to background by user.');
+  }
+  void onAppResumed() {
+    print('on app resume');
+  }
+
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state){
     switch(state){
-      case AppLifecycleState.paused:print('CHISOM: App has been sent to background by user.');break;
+      case AppLifecycleState.paused:this.onAppPaused();break;
+      case AppLifecycleState.resumed:this.onAppResumed();break;
       default:print('die hard dude');
     }
     super.didChangeAppLifecycleState(state);

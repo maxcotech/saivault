@@ -4,6 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/settings_controller.dart';
 import 'package:saivault/config/app_constants.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 
 
 class MoreView extends StatelessWidget{
@@ -12,13 +13,18 @@ class MoreView extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar:AppBar(title:Text('More Options')),
-      body:GetBuilder(builder:(control)=>_body(context:context),init:SettingsController())
-    /* body:Image.asset('assets/saivault_bg_dark.png',height:Get.height,width:double.infinity,
-      fit:BoxFit.cover
-     )*/
+      body:GetBuilder(builder:(control)=>_body(context),init:SettingsController())
+   
     );
   }
-  Widget _body({BuildContext context}){
+
+  Widget _body(BuildContext context){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyView(context:context)),
+      BadWidget(completer:controller.completer, bads: controller.bads)
+    ]);
+  }
+  Widget _bodyView({BuildContext context}){
     return ListView(
       padding:EdgeInsets.only(top:10),
       children:<Widget>[

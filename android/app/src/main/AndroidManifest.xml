@@ -13,6 +13,12 @@
         android:label="Saivault"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7011323618375601~5351968601"/>
+        <!--<meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~4354546703"/>-->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

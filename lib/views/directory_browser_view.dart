@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:saivault/controllers/directory_browser_controller.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/file_storage_controller.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/directory_search_delegate.dart';
 import 'package:saivault/widgets/empty_widget.dart';
 
@@ -32,7 +33,16 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
       body:_body()
     ));
   }
+
   Widget _body(){
+    return Column(children:<Widget>[
+      Expanded(child:_bodyView()),
+      BadWidget(completer:controller.completer, bads: controller.bads)
+    ]);
+  }
+
+
+  Widget _bodyView(){
     return Column(
       children:<Widget>[
         Expanded(child:GetBuilder(builder:(FileStorageController scontrol)=>_entityList())),

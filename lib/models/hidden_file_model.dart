@@ -1,4 +1,3 @@
-import 'package:encrypt/encrypt.dart';
 
 class HiddenFileModel{
   String hiddenPath,originalPath,initialVector,createdAt,fileIv;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:saivault/controllers/add_password_controller.dart';
 import 'package:get/get.dart';
+import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/custom_text_field.dart';
 
 class AddPasswordView extends StatelessWidget{
@@ -12,13 +13,24 @@ class AddPasswordView extends StatelessWidget{
       appBar:AppBar(
         title:Text('Add Password')
       ),
-      body:_body()
+      body: GetBuilder(
+      builder:(AddPasswordController control)=> _body())
     );
   }
+
   Widget _body(){
-    return GetBuilder(
-      builder:(AddPasswordController control)=>SingleChildScrollView(
-        padding:EdgeInsets.symmetric(horizontal:15,vertical:40),
+    return Column(
+      children:<Widget>[
+        Expanded(child:_bodyView()),
+        BadWidget(completer:controller.completer, bads: controller.bads)
+
+      ]
+    );
+  }
+
+  Widget _bodyView(){
+    return SingleChildScrollView(
+        padding:EdgeInsets.symmetric(horizontal:15,vertical:30),
         child:Column(
           children:<Widget>[
             customTextField(
@@ -43,7 +55,7 @@ class AddPasswordView extends StatelessWidget{
             _submitBtn()
           ]
         )
-      )
+      
     );
   }
   Widget _submitBtn(){

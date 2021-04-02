@@ -3,12 +3,15 @@ import 'package:saivault/controllers/controller.dart';
 import 'package:get/get.dart';
 import 'package:saivault/controllers/password_manager_controller.dart';
 import 'package:saivault/controllers/settings_controller.dart';
+import 'package:saivault/helpers/ad_manager.dart';
 import 'package:saivault/helpers/mixins/connection_mixin.dart';
 import 'package:saivault/models/password_model.dart';
-import 'package:flutter/material.dart' show TextEditingController;
+import 'package:flutter/material.dart' show TextEditingController,Orientation;
 import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:saivault/widgets/dialog.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:async';
 
 class EditPasswordController extends Controller with ConnectionMixin{
   PasswordModel model;
@@ -20,6 +23,10 @@ class EditPasswordController extends Controller with ConnectionMixin{
   AppService appService;
   DBService dbService;
   PasswordManagerController pmanager;
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+
+  
   @override 
   void onInit(){
     this.model = Get.arguments as PasswordModel;
@@ -29,6 +36,13 @@ class EditPasswordController extends Controller with ConnectionMixin{
     _password = new TextEditingController(text:pmanager.decryptPassword(this.model));
     appService = Get.find<AppService>();
     dbService = Get.find<DBService>();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
   Future<void> onSubmit()async{
@@ -96,6 +110,8 @@ class EditPasswordController extends Controller with ConnectionMixin{
   void onClose(){
     _label.dispose();
     _password.dispose();
+    bads?.dispose();
+    super.onClose();
   }
 
 }

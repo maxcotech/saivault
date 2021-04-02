@@ -14,9 +14,12 @@ import 'package:saivault/services/app_service.dart';
 import 'package:saivault/services/db_service.dart';
 import 'package:get/get.dart';
 import 'package:saivault/services/storage_channel_service.dart';
-import 'package:saivault/widgets/confirm_dialog.dart';
 import 'package:saivault/widgets/dialog.dart';
-import 'package:saivault/config/app_constants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/material.dart' show Orientation;
+import 'package:saivault/helpers/ad_manager.dart';
+import 'dart:async';
+
 
 class FileStorageController extends Controller with FileExtension, PathMixin, ConnectionMixin{
   List<String> _pathsToTrack;
@@ -26,6 +29,10 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
   StorageChannelService channelService;
   SettingsController settings;
   List<String> get pathsToTrack => this._pathsToTrack;
+  BannerAd bads;
+  Completer<BannerAd> completer = new Completer<BannerAd>();
+
+
   @override
   Future<void> onInit() async {
     dbService = Get.find<DBService>();
@@ -34,6 +41,13 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
     mController = Get.find<FileManagerController>();
     settings = Get.find<SettingsController>();
     channelService = new StorageChannelService();
+    this.bads = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      listener: AdListener(onAdLoaded: (Ad ad){completer.complete(ad as BannerAd);}),
+      request: AdRequest(),
+      size:AdSize.getSmartBanner(Orientation.landscape)
+    );
+    bads.load();
     super.onInit();
   }
 
@@ -117,18 +131,7 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
     
   }
 
-  Future<bool> requestUriPermission() async {
-      if (await confirmDialog(
-          message:
-              'Please choose the root directory of your external storage (e.g usdcard1) on the following screen to grant $APPNAME write permission')) {
-        if (await channelService.requestStorageAccess(
-            await this.getStoragePathByEntity(await this.getRemovableStoragePath()))) {
-          return false;
-        }
-        return false;
-      }
-      return false;
-  }
+  
 
   Future<bool> renameEntity(String path,String newFileName) async {
     try {
@@ -189,5 +192,10 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
     if (request.isGranted) {
       Get.toNamed('/directory_browser', arguments: arg);
     }
+  }
+  @override
+  void onClose() {
+    bads?.dispose();
+    super.onClose();
   }
 }
