@@ -111,7 +111,7 @@ class AddPasswordController extends Controller with ConnectionMixin{
        getDialog(message:'Your new password was saved successfully.',status:Status.success);
       _passwordValue.clear();
       _passwordLabel.clear();
-       if(await this.isConnectedToInternet()){
+       if(await this.isConnectedToInternet() && appService.shouldAutoBackup()){
           this.settings = Get.find<SettingsController>();
           await this.settings.backupDatabase();
           Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));

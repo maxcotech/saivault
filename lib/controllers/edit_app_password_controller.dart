@@ -99,7 +99,7 @@ class EditAppPasswordController extends LoginController with ConnectionMixin{
             if(res != -1) Get.rawSnackbar(message:'Your password was changed successfully.',duration:Duration(seconds:4));
             this.clearInputs();
             this.setLoading(false);
-            if(await this.isConnectedToInternet()){
+            if(await this.isConnectedToInternet() && appService.shouldAutoBackup()){
               await this.settings.backupDatabase();
               Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
             } 

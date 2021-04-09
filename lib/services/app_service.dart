@@ -46,6 +46,13 @@ class AppService extends GetxService{
       return false;
     }
   }
+  bool shouldAutoBackup(){
+    if(pref.containsKey(SHOULD_AUTO_BACKUP)){
+      return pref.get(SHOULD_AUTO_BACKUP);
+    } else {
+      return true;
+    }
+  }
 
   void launchUrl(String url) async {
     if(await canLaunch(url)){
@@ -65,6 +72,7 @@ class AppService extends GetxService{
     }
   }
   
+  
   Future<bool> setThemeMode(bool val) async {
     return await pref.setBool(THEME_MODE,val);
   }
@@ -75,6 +83,10 @@ class AppService extends GetxService{
   Future<bool> setShouldShowPathOnManager(bool value) async {
     return await pref.setBool(SHOW_ENTITY_PATH_ON_MANAGER,value);
   }
+  Future<bool> setShouldAutoBackup(bool value) async {
+    return await pref.setBool(SHOULD_AUTO_BACKUP,value);
+  }
+  
 
   
   

@@ -23,6 +23,11 @@ class SettingsController extends Controller with ConnectionMixin{
   DBService dbService;
   BannerAd bads;
   Completer<BannerAd> completer = new Completer<BannerAd>();
+  bool isBackingUp = false;
+  void setIsBackingUp(bool val){
+    this.isBackingUp = val;
+    this.update();
+  }
 
 
   @override
@@ -61,37 +66,47 @@ class SettingsController extends Controller with ConnectionMixin{
     await appService.setShouldShowPathOnManager(value);
     this.update();
   }
+  Future<void> setShouldAutoBackup(bool value) async {
+    await appService.setShouldAutoBackup(value);
+    this.update();
+  }
 
   void onDownloadFile() async {
      DriveServices dServices = await DriveServices().init();
      await dServices.getBackedUpFiles();
   }
 
-  Future backupDatabase() async {
+  Future backupDatabase({bool checkSettings=true}) async {
+    if(checkSettings == true){
+      if(appService.shouldAutoBackup() == false){
+        return;
+      }
+    }
     await dbService.createBackupOnDrive();
     return;
   }
 
   Future onBackupDatabase() async {
-    this.setLoading(true);
+    this.setIsBackingUp(true);
     if(await this.isConnectedToInternet() == false){
       getDialog(
         status:Status.error,
         message:'Sorry, it seems like you are not connected to the internet, please check your network connection and try again.');
+      this.setIsBackingUp(false);
       return;
     }
     try{
-      await this.backupDatabase();
-      this.setLoading(false);
+      await this.backupDatabase(checkSettings: false);
+      this.setIsBackingUp(false);
       Get.rawSnackbar(message:'Database backup completed.',duration:Duration(seconds:2));
     }
     on PlatformException catch(e,stacktrace){
-      this.setLoading(false);
+      this.setIsBackingUp(false);
       print(e.message+" "+stacktrace.toString());
       getDialog(message:"Sorry, an error occurred, please check your network configuration and try again.",status:Status.error);
     }
     catch(e,stacktrace){
-      this.setLoading(false);
+      this.setIsBackingUp(false);
       print(stacktrace.toString());
       print(e.toString());
       getDialog(message:e.toString(),status:Status.error);

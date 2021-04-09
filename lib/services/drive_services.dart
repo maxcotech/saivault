@@ -38,7 +38,9 @@ class DriveServices {
     if (appService.pref.containsKey('signed_in') == false ||
         appService.pref.get('signed_in') == false) {
       this.account = await googleSignIn.signIn();
-      await appService.pref.setBool('signed_in', true);
+      if(this.account != null){
+        await appService.pref.setBool('signed_in', true);
+      }
     } else {
       this.account =
           await googleSignIn.signInSilently().whenComplete(() => null);

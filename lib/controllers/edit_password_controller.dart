@@ -62,7 +62,7 @@ class EditPasswordController extends Controller with ConnectionMixin{
       if(result != -1){
         getDialog(message:'Password Successfully edited',status:Status.success);
         await pmanager.loadSavedPasswords();
-        if(await this.isConnectedToInternet()){
+        if(await this.isConnectedToInternet() && appService.shouldAutoBackup()){
           this.settings = Get.find<SettingsController>();
           await this.settings.backupDatabase();
           Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));

@@ -46,7 +46,7 @@ class LoginView extends StatelessWidget{
                 onPressed:controller.togglePasswordVisibility
               )
           ),
-          SizedBox(height:60),
+          SizedBox(height:30),
           _submitButton(),
       ])
     );

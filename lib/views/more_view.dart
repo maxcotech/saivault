@@ -24,11 +24,17 @@ class MoreView extends StatelessWidget{
       BadWidget(completer:controller.completer, bads: controller.bads)
     ]);
   }
-  Widget _bodyView({BuildContext context}){
-    return ListView(
+  Widget _bodyView({BuildContext context}){ 
+    List<Widget> items = this.getBodyList(context);
+    return ListView.separated(
       padding:EdgeInsets.only(top:10),
-      children:<Widget>[
-     
+      itemBuilder: (context,int index) => items[index], 
+      separatorBuilder: (context,index) => Divider(), 
+      itemCount: items.length
+    );
+  }
+  List<Widget> getBodyList(BuildContext context){
+    return <Widget>[
         ListTile(
           leading:CircleAvatar(child:Icon(LineIcons.question_circle)),
           title:Text('Help and Guidelines'),
@@ -69,8 +75,8 @@ class MoreView extends StatelessWidget{
           onTap:() => Get.toNamed('/about_page')
         ),
          
-      ]
-    );
+      ];
   }
+  
   
 }

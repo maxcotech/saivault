@@ -90,8 +90,9 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
           if(entities == null || entities.length == 0){
             return EmptyWidget();
           }
-          return ListView.builder(
+          return ListView.separated(
             itemCount:entities.length,
+            separatorBuilder: (_,i)=>Divider(),
             itemBuilder:(BuildContext context,int index){
               FileSystemEntity entity = entities[index];
               return ListTile(

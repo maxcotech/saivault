@@ -9,3 +9,4 @@ const String DATABASE_NAME = "maxco11.db";
 const String APP_VERSION = "0.0.1";
 const int MAX_PASSWORD_LENGTH = 99999;
 const String APP_TERMS_URL = "https://saivault.maxcotechpro.com/terms-and-conditions";
+const String SHOULD_AUTO_BACKUP = "should_auto_backup";

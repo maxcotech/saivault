@@ -23,9 +23,17 @@ class SettingsView extends StatelessWidget{
     ]);
   }
   Widget _bodyView({BuildContext context}){
-    return ListView(
+    List<Widget> items = this.getBodyList();
+    return ListView.separated(
       padding:EdgeInsets.only(top:10),
-      children:<Widget>[
+      itemCount:items.length,
+      itemBuilder: (context,index) => items[index],
+      separatorBuilder: (context,index) => Divider(),
+    );
+  }
+
+  List<Widget> getBodyList(){
+    return <Widget>[
         ListTile(
           leading:CircleAvatar(child:Icon(LineIcons.lock)),
           title:Text('Change Password'),
@@ -77,12 +85,28 @@ class SettingsView extends StatelessWidget{
           leading:CircleAvatar(child:Icon(LineIcons.info)),
           title:Text('Backup your data'),
           subtitle:Text('This will enable you to backup your records, which includes your saved passwords, currently tracked file system entities and encrypted security credencials.'),
-          trailing:Icon(CupertinoIcons.forward)
+          trailing:this.backupStateWidget()
         ),
-       
+        ListTile(
+          leading:CircleAvatar(child:Icon(LineIcons.database)),
+          title:Text('Auto Backup'),
+          subtitle:Text('Automatically update backup as soon as you make changes to your data.'),
+          trailing:SizedBox(
+            width:55,
+            child:Switch(
+            onChanged: (bool val) => controller.setShouldAutoBackup(val),
+            value: controller.appService.shouldAutoBackup(),))
+        ),
          
-      ]
-    );
+      ];
+  }
+
+  Widget backupStateWidget(){
+    if(controller.isBackingUp == true){
+      return SizedBox(child:CircularProgressIndicator(strokeWidth: 2),height:20,width:20);
+    } else {
+      return Icon(CupertinoIcons.forward);
+    }
   }
   
 }

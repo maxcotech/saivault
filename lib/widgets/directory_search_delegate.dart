@@ -37,9 +37,10 @@ class DirectorySearchDelegate extends SearchDelegate with FileExtension{
     return Container();
   }
   Widget widgetList(List<FileSystemEntity> entities){
-    return GetBuilder<FileStorageController>(builder:(control)=>ListView.builder(
+    return GetBuilder<FileStorageController>(builder:(control)=>ListView.separated(
         padding:EdgeInsets.only(bottom:55),
         itemCount:entities.length,
+        separatorBuilder:(_,i)=>Divider(),
         itemBuilder:(BuildContext context,int index){
           FileSystemEntity entity = entities[index];
           return ListTile(
@@ -50,7 +51,7 @@ class DirectorySearchDelegate extends SearchDelegate with FileExtension{
             },
             leading:storageControl.getFileTypeIcon(entity),
             title:Text(entity.path.split('/').last),
-            subtitle:Text(entity.path),
+            subtitle:controller.appService.shouldShowPathOnBrowser()?Text(entity.path):null,
             trailing:CircularCheckBox(value:storageControl.pathIsSelected(entity.path),
             onChanged:(bool newval){
               storageControl.toggleAppendPathsToTrack(entity.path);
