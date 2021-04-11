@@ -116,11 +116,13 @@ class FileStorageController extends Controller with FileExtension, PathMixin, Co
   Future<void> onTrackSelected() async {
     if(await channelService.isStoragePermissionGranted()){
       try {
+        this.setLoading(true);
         await this.trackSelected();
         if(await this.isConnectedToInternet() && appService.shouldAutoBackup()){
           await this.settings.backupDatabase();
           Get.rawSnackbar(message:'Backup data successfully updated.',duration:Duration(seconds:3));
         } 
+        this.setLoading(false);
       } catch (e) {
         this.setLoading(false);
         getDialog(message: e.toString(), status: Status.error);

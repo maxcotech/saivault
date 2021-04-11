@@ -10,6 +10,7 @@ import 'package:saivault/services/storage_channel_service.dart';
 
 class FileEncryption with PathMixin {
   Future<String> encryptFile(Map<String, dynamic> payload) async {
+    StorageChannelService channelService = StorageChannelService();
     File sourceFile = new File(payload['source_path']);
     File desFile = new File(payload['des_path']);
     print('root of source file ' +
@@ -39,12 +40,13 @@ class FileEncryption with PathMixin {
         print('deleted source file successfully');
       } on FileSystemException catch (e) {
         print(e.message);
-        StorageChannelService channelService = StorageChannelService();
+        
         if (await channelService.deleteDocument(sourceFile.path) != true) {
           print('could not delete file on platform');
           return null;
         }
       }
+      await channelService.scanMediaStorage(sourceFile.path);
     }
     if (result != null) {
       return base64Url.encode(result);
@@ -91,6 +93,7 @@ class FileEncryption with PathMixin {
   }
   
   Future<bool> decryptFile(Map<String, dynamic> payload) async {
+    StorageChannelService channelService = StorageChannelService();
     File sourceFile = new File(payload['source_path']);
     File desFile = new File(payload['des_path']);
     if (await sourceFile.exists() == false) return false;
@@ -120,12 +123,12 @@ class FileEncryption with PathMixin {
           print('deleted source file successfully');
         } on FileSystemException catch (e) {
           print(e.message);
-          StorageChannelService channelService = StorageChannelService();
           if (await channelService.deleteDocument(sourceFile.path) != true) {
             print('could not delete file on platform');
             return false;
           }
         }
+        await channelService.scanMediaStorage(desFile.path);
       }
       return true;
     }

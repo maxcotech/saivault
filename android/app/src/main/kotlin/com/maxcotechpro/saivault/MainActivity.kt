@@ -14,9 +14,12 @@ import android.content.ActivityNotFoundException
 import android.content.ContentResolver
 import android.provider.DocumentsContract
 import androidx.documentfile.provider.DocumentFile
+import android.view.WindowManager.LayoutParams;
 import android.webkit.MimeTypeMap
 import android.util.Log
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "maxcotechpro.com/saivault/channel";
@@ -24,6 +27,7 @@ class MainActivity: FlutterActivity() {
     val REQUEST_CODE_CREATE_FILE = 45124
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        getWindow().addFlags(LayoutParams.FLAG_SECURE);
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         methodChannel = channel
         channel.setMethodCallHandler {
@@ -53,6 +57,11 @@ class MainActivity: FlutterActivity() {
                 val newFileName = call.argument<String>("new_file_name");
                 val response = renameDocument(filePath!!,newFileName!!);
                 result.success(response);
+              }
+              "scanMediaStore" -> {
+                val filePath = call.argument<String>("file_path")
+                scanMediaStore(filePath!!);
+                result.success(true);
               }
               "deleteDocument" -> {
                   val docPath = call.argument<String>("doc_path");
@@ -87,6 +96,11 @@ class MainActivity: FlutterActivity() {
       var fileDocument = documentFile?.findFile(fileName);
       return fileDocument;
     }
+
+    /*override fun onCreate(savedInstanceState: Bundle) {
+      getWindow().addFlags(LayoutParams.FLAG_SECURE);
+      super.onCreate(savedInstanceState);
+    }*/
     
     public fun getDocumentFileByPath(docPath: String, createPaths: Boolean = false):DocumentFile? {
         try{
@@ -210,6 +224,21 @@ class MainActivity: FlutterActivity() {
         }
         return type;
        
+    }
+
+    public fun scanMediaStore(fileName: String){
+      var fileUri: Uri? = Uri.fromFile(File(fileName));
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          var mediaScanIntent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+          mediaScanIntent.setData(fileUri!!);
+          sendBroadcast(mediaScanIntent);
+      } else {
+          sendBroadcast(Intent(
+            Intent.ACTION_MEDIA_MOUNTED,
+            Uri.parse("file://" + Environment.getExternalStorageDirectory()))
+          );
+      }
+      
     }
 
     public fun createDocument(filePath: String,mimeType: String?): Boolean{

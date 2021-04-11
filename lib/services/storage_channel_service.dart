@@ -68,6 +68,19 @@ class StorageChannelService with PathMixin{
      }
    }
 
+   Future<bool> scanMediaStorage(String filePath) async {
+     try{
+       Map<String,dynamic> payload = <String,dynamic>{'file_path':filePath};
+       bool result = await channel.invokeMethod('scanMediaStore',payload);
+       return result;
+     }
+     on PlatformException catch(e){
+       print(e.stacktrace);
+       print(e.message);
+       return false;
+     }
+   }
+
    Future<dynamic> methodCallHandler(MethodCall call)async{
       switch(call.method){
         case 'resolveWithSDCardUri': this.onResolveWithSDCardUri(call.arguments as String);break;

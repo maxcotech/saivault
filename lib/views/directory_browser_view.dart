@@ -8,6 +8,7 @@ import 'package:saivault/controllers/file_storage_controller.dart';
 import 'package:saivault/widgets/bad_widget.dart';
 import 'package:saivault/widgets/directory_search_delegate.dart';
 import 'package:saivault/widgets/empty_widget.dart';
+import 'package:saivault/widgets/linear_loader.dart';
 
 class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
   final FileStorageController storageControl = Get.find<FileStorageController>();
@@ -36,6 +37,9 @@ class DirectoryBrowserView extends GetWidget<DirectoryBrowserController>{
 
   Widget _body(){
     return Column(children:<Widget>[
+      GetBuilder(
+        init:FileStorageController(),
+        builder:(control)=>LinearLoader(isLoading:storageControl.isLoading)),
       Expanded(child:_bodyView()),
       BadWidget(completer:controller.completer, bads: controller.bads)
     ]);
