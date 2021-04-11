@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:saivault/controllers/settings_controller.dart';
 import 'package:saivault/config/app_constants.dart';
 import 'package:saivault/widgets/bad_widget.dart';
+import 'package:saivault/widgets/linear_loader.dart';
 
 
 class MoreView extends StatelessWidget{
@@ -20,6 +21,7 @@ class MoreView extends StatelessWidget{
 
   Widget _body(BuildContext context){
     return Column(children:<Widget>[
+      LinearLoader(isLoading:controller.isLoading),
       Expanded(child:_bodyView(context:context)),
       BadWidget(completer:controller.completer, bads: controller.bads)
     ]);
